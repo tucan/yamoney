@@ -1,4 +1,4 @@
 yamoney
 =======
 
-Client for Yandex.Money payment system
+Yandex.Money payment system client
