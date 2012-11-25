@@ -86,13 +86,13 @@ class Client
 
 	# Creates function for calling API method with given name
 	
-	@createMethod: (name) -> () ->
+	@createMethod: (name) -> (first) ->
 		options = name: name
 
-		if arguments[0] instanceof Function then [options.callback] = arguments else [options.data, options.callback] = arguments
+		if first instanceof Function then [options.callback] = arguments else [options.data, options.callback] = arguments
 		
 		@sendRequest(options)
-	
+
 	# Revokes token
 	
 	revokeToken: @createMethod('revoke')
