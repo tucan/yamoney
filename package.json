@@ -1,0 +1,13 @@
+{
+    "name": "yamoney",
+    "version": "0.1.2",
+    "description": "Client for Yandex.Money payment system",
+    "keywords": [
+        "yandex",
+        "money"
+    ],
+    "author": {
+        "name": "Vladimir Andreev",
+        "email": "volodya@netfolder.ru"
+    }
+}
