@@ -1,101 +1,122 @@
-# Реализация клиента для работы с Яндекс.Деньгами
+# Yandex.Money client
 #
-# Октябрь 2012 года
+# November, 2012 year
 #
-# Автор - Владимир Андреев
+# Author - Vladimir Andreev
 #
 # E-Mail: volodya@netfolder.ru
 
-# Модули, необходимые для работы
+# Required modules
 
 https = require('https')
 
-# Константы
+# Constants
 
-MONEY_HOST = 'money.yandex.ru'			# Хост для запросов
-DESKTOP_HOST = 'sp-money.yandex.ru'		# Хост для авторизации десктопных приложений
-MOBILE_HOST = 'm.sp-money.yandex.ru'	# Хост для авторизации мобильных приложений
+MONEY_HOST = 'money.yandex.ru'			# Host for requests
+DESKTOP_HOST = 'sp-money.yandex.ru'		# Host for authorization of desktop applications
+MOBILE_HOST = 'm.sp-money.yandex.ru'	# Host for authorization of mobile applications
 
-# Клиент Яндекс.Денег
+# Yandex.Money client
 
 class Client
 
-	# Создает функцию для вызова метода сервера
-	
-	@createMethod: (name) -> () -> @sendRequest(name, arguments[0], arguments[1])
-
-	# Конструктор объекта
+	# Object constructor
 	
 	constructor: (@token, @host = MONEY_HOST) ->
 	
-	# Собирает запрос
+	# Assembles request from provided data
 	
 	assembleRequest: (data) -> (encodeURIComponent(key) + '=' + encodeURIComponent(value) for key, value of data).join('&')
 	
-	# Разбирает ответ
+	# Parses server response from JSON data
 	
 	parseResponse: (body) -> JSON.parse(body)
 	
-	# Отправляет запрос на сервер системы
+	# Sends request to payment system
 	
-	sendRequest: (name) ->
-		[callback, data] = if typeof arguments[1] is 'function' then [arguments[1]] else [arguments[2], arguments[1]]
+	sendRequest: (options) ->
+		# Request body
+
+		body = @assembleRequest(options.data)
 		
-		body = @assembleRequest(data)
-		
+		# Headers to be send
+
 		headers =
 			'authorization': 'Bearer ' + @token
 			'content-type': 'application/x-www-form-urlencoded'
 			'content-length': Buffer.byteLength(body)
 
-		request = https.request(host: @host, path: '/api/' + name, method: 'POST', headers: headers)
-		
+		request = https.request(host: @host, path: '/api/' + options.name, method: 'POST', headers: headers)
+
+		# On-response handler
+
 		request.on('response', (response) =>
-			# Получены заголовки
 
-			#console.log('Response code:', response.statusCode)
-			#console.log('Headers:')
-			#console.log(response.headers)
-			
-			response.data = ''
+			# Response data
 
-			response.on('data', (data) =>
-				response.data += data
+			data = ''
+
+			# On-data handler
+
+			response.on('data', (chunk) =>
+				data += chunk
+
+				undefined
 			)
 			
+			# On-end handler
+
 			response.on('end', () =>
-				callback?.call(null, 0, @parseResponse(response.data))
+				if response.statusCode is 200
+					options.callback?.call(@, 0, @parseResponse(data))
+				else
+					options.callback?.call(@, new Error(response.headers['www-authenticate']))
+
+				undefined
 			)
+
+			undefined
 		)
+
+		# Writes data and finishes request
 
 		request.end(body)
 		
 		@
+
+	# Creates function for calling API method with given name
 	
-	# Отзывает токен
+	@createMethod: (name) -> () ->
+		options = name: name
+
+		if arguments[0] instanceof Function then [options.callback] = arguments else [options.data, options.callback] = arguments
+		
+		@sendRequest(options)
+	
+	# Revokes token
 	
 	revokeToken: @createMethod('revoke')
 	
-	# Возвращает информацию о состоянии счета
+	# Returns account status information
 	
 	accountInfo: @createMethod('account-info')
 	
-	# Возвращает историю операций
+	# Returns operation history
 	
 	operationHistory: @createMethod('operation-history')
 	
-	# Возвращает детальную информацию об операции
+	# Returns detailed operation information
 	
 	operationDetails: @createMethod('operation-details')
 	
-	# Запрашивает проведение платежа
+	# Requests payment
 	
 	requestPayment: @createMethod('request-payment')
 	
-	# Подтверждает проведение платежа
+	# Confirms payment
 	
 	processPayment: @createMethod('process-payment')
 
-# Объекты для экспорта
+# Exported objects
 
 exports = module.exports = Client

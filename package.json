@@ -1,13 +1,17 @@
 {
-    "name": "yamoney",
-    "version": "0.1.2",
-    "description": "Client for Yandex.Money payment system",
-    "keywords": [
-        "yandex",
-        "money"
-    ],
-    "author": {
-        "name": "Vladimir Andreev",
-        "email": "volodya@netfolder.ru"
-    }
+	"name": "yamoney",
+	"version": "0.1.4",
+	"description": "Yandex.Money payment system client",
+	"keywords": [
+		"yandex",
+		"money"
+	],
+	"author": {
+		"name": "Vladimir Andreev",
+		"email": "volodya@netfolder.ru"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/tucan/yamoney.git"
+	}
 }

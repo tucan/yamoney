@@ -1,9 +1,11 @@
-# Классы для работы с Яндекс.Деньгами
+# Classes for dealing with Yandex.Money
 #
-# Октябрь 2012 года
+# November, 2012 year
 #
-# Автор - Владимир Андреев
+# Author - Vladimir Andreev
 #
 # E-Mail: volodya@netfolder.ru
+
+# Exported objects
 
 exports.Client = require('./lib/client')
