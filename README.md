@@ -6,10 +6,9 @@ _yamoney_ provides you with easy and intuitive interface to access Yandex.Money 
 
     #!/usr/bin/env coffee
 
-    yamoney = require('../yamoney')
-    TEST_TOKEN = require('./token.json').access_token
+    Client = require('yamoney').Client
 
-    client = new yamoney.Client(TEST_TOKEN)
+    client = new Client(require('./token.json').access_token)
 
     client.accountInfo((error, data) ->
       unless error
