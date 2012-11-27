@@ -13,8 +13,8 @@ https = require('https')
 # Constants
 
 MONEY_HOST = 'money.yandex.ru'			# Host for requests
-DESKTOP_HOST = 'sp-money.yandex.ru'		# Host for authorization of desktop applications
-MOBILE_HOST = 'm.sp-money.yandex.ru'	# Host for authorization of mobile applications
+DESKTOP_HOST = 'sp-money.yandex.ru'		# Host for authorization for desktop applications
+MOBILE_HOST = 'm.sp-money.yandex.ru'	# Host for authorization for mobile applications
 
 # Yandex.Money client
 
@@ -35,6 +35,7 @@ class Client
 	# Sends request to payment system
 	
 	sendRequest: (options) ->
+		
 		# Request body
 
 		body = @assembleRequest(options.data)
@@ -51,15 +52,15 @@ class Client
 		# On-response handler
 
 		request.on('response', (response) =>
+			
+			# Response chunks
 
-			# Response data
-
-			data = ''
+			chunks = []
 
 			# On-data handler
 
 			response.on('data', (chunk) =>
-				data += chunk
+				chunks.push(chunk)
 
 				undefined
 			)
@@ -68,7 +69,7 @@ class Client
 
 			response.on('end', () =>
 				if response.statusCode is 200
-					options.callback?.call(@, 0, @parseResponse(data))
+					options.callback?.call(@, 0, @parseResponse(Buffer.concat(chunks)))
 				else
 					options.callback?.call(@, new Error(response.headers['www-authenticate']))
 
@@ -81,7 +82,7 @@ class Client
 		# Writes data and finishes request
 
 		request.end(body)
-		
+
 		@
 
 	# Creates function for calling API method with given name
