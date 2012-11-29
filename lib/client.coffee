@@ -12,9 +12,7 @@ https = require('https')
 
 # Constants
 
-MONEY_HOST = 'money.yandex.ru'			# Host for requests
-DESKTOP_HOST = 'sp-money.yandex.ru'		# Host for authorization for desktop applications
-MOBILE_HOST = 'm.sp-money.yandex.ru'	# Host for authorization for mobile applications
+MONEY_HOST = 'money.yandex.ru'		# Host for requests
 
 # Yandex.Money client
 
@@ -30,7 +28,7 @@ class Client
 	
 	# Parses server response from JSON data
 	
-	parseResponse: (body) -> JSON.parse(body)
+	parseResponse: (body) -> if body.length then JSON.parse(body) else {}
 	
 	# Sends request to payment system
 	
@@ -39,13 +37,15 @@ class Client
 		# Request body
 
 		body = @assembleRequest(options.data)
-		
+
 		# Headers to be send
 
 		headers =
 			'authorization': 'Bearer ' + @token
 			'content-type': 'application/x-www-form-urlencoded'
 			'content-length': Buffer.byteLength(body)
+
+		#
 
 		request = https.request(host: @host, path: '/api/' + options.name, method: 'POST', headers: headers)
 
@@ -60,6 +60,9 @@ class Client
 			# On-data handler
 
 			response.on('data', (chunk) =>
+
+				# Pushes arrived chunk to array
+				
 				chunks.push(chunk)
 
 				undefined
@@ -68,10 +71,19 @@ class Client
 			# On-end handler
 
 			response.on('end', () =>
-				if response.statusCode is 200
-					options.callback?.call(@, 0, @parseResponse(Buffer.concat(chunks)))
+				
+				# Assembles body from chunks and parses it
+
+				data = @parseResponse(chunks.join(''))
+				
+				# Tries to detect error
+
+				if data.error?
+					options.callback?.call(@, new Error(data.error))
+				else if response.statusCode isnt 200
+					options.callback?.call(@, new Error('Response code is ' + response.statusCode))
 				else
-					options.callback?.call(@, new Error(response.headers['www-authenticate']))
+					options.callback?.call(@, null, data)
 
 				undefined
 			)
@@ -91,7 +103,7 @@ class Client
 		options = name: name
 
 		if first instanceof Function then [options.callback] = arguments else [options.data, options.callback] = arguments
-		
+
 		@sendRequest(options)
 
 	# Revokes token

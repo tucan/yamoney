@@ -1,7 +1,7 @@
 {
 	"name": "yamoney",
 	"version": "0.1.4",
-	"description": "Yandex.Money payment system client",
+	"description": "Yandex.Money client",
 	"keywords": [
 		"yandex",
 		"money"
