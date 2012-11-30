@@ -17,7 +17,6 @@ MONEY_HOST = 'money.yandex.ru'		# Host for requests
 # Yandex.Money client
 
 class Client
-
 	# Object constructor
 	
 	constructor: (@token, @host = MONEY_HOST) ->
@@ -33,7 +32,6 @@ class Client
 	# Sends request to payment system
 	
 	sendRequest: (options) ->
-		
 		# Request body
 
 		body = @assembleRequest(options.data)
@@ -52,7 +50,6 @@ class Client
 		# On-response handler
 
 		request.on('response', (response) =>
-			
 			# Response chunks
 
 			chunks = []
@@ -62,7 +59,7 @@ class Client
 			response.on('data', (chunk) =>
 
 				# Pushes arrived chunk to array
-				
+
 				chunks.push(chunk)
 
 				undefined
@@ -71,7 +68,6 @@ class Client
 			# On-end handler
 
 			response.on('end', () =>
-				
 				# Assembles body from chunks and parses it
 
 				data = @parseResponse(chunks.join(''))
