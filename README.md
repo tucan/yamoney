@@ -25,6 +25,7 @@ _yamoney_ provides you with easy and intuitive interface in order to access Yand
 
 ## Usage
 
+### RevokeToken
 ### AccountInfo
     client.accountInfo((error, info) ->
         unless error
