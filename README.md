@@ -1,14 +1,14 @@
 # yamoney
 
-_yamoney_ provides you with easy and intuitive interface to access Yandex.Money payment system.
+_yamoney_ provides you with easy and intuitive interface in order to access Yandex.Money payment system.
 
 ## Example
-
     #!/usr/bin/env coffee
 
     Client = require('yamoney').Client
+    TEST_TOKEN = require('./token.json').access_token
 
-    client = new Client(require('./token.json').access_token)
+    client = new Client(TEST_TOKEN)
 
     client.accountInfo((error, data) ->
       unless error
@@ -22,3 +22,35 @@ _yamoney_ provides you with easy and intuitive interface to access Yandex.Money 
 ## Installation
 
     $ npm install yamoney
+
+## Usage
+
+### AccountInfo
+    client.accountInfo((error, info) ->
+        unless error
+    		console.log(info)
+    	else
+    		console.log(error)
+    
+    	undefined
+    )
+### OperationHistory
+    client.operationHistory(type: 'deposition', start_record: 5, records: 3, (error, history) ->
+        unless error
+	    	console.log(history)
+    	else
+	    	console.log(error)
+
+	    undefined
+    )
+### OperationDetails
+    client.operationDetails(operation_id: '111111111111111', (error, details) ->
+        unless error
+    		console.log(details)
+    	else
+    		console.log(error)
+    
+    	undefined
+    )
+### RequestPayment
+### ProcessPayment
