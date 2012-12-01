@@ -1,57 +1,88 @@
-# yamoney
+# Yandex.Money
 
-_yamoney_ provides you with easy and intuitive interface in order to access Yandex.Money payment system.
+_yamoney_ provides you with easy and nice interface in order to access Yandex.Money payment system.
 
-## Example
-    #!/usr/bin/env coffee
+# Installation
 
-    Client = require('yamoney').Client
-    TEST_TOKEN = require('./token.json').access_token
+```
+$ npm install yamoney
+```
 
-    client = new Client(TEST_TOKEN)
+# Examples
 
-    client.accountInfo((error, data) ->
-      unless error
-        console.log('Account: ' + data.account)
-        console.log('Currency: ' + data.currency)
-        console.log('Balance: ' + data.balance)
+```coffeescript
+#!/usr/bin/env coffee
 
-      undefined
-    )
+Client = require('yamoney').Client
+TEST_TOKEN = require('./token.json').access_token
 
-## Installation
+client = new Client(TEST_TOKEN)
 
-    $ npm install yamoney
+client.accountInfo((error, data) ->
+	unless error
+		console.log('Account: ' + data.account)
+		console.log('Currency: ' + data.currency)
+		console.log('Balance: ' + data.balance)
 
-## Usage
+	undefined
+)
+```
+
+# API Documentation
+
+## Methods
 
 ### RevokeToken
-### AccountInfo
-    client.accountInfo((error, info) ->
-        unless error
-    		console.log(info)
-    	else
-    		console.log(error)
-    
-    	undefined
-    )
-### OperationHistory
-    client.operationHistory(type: 'deposition', start_record: 5, records: 3, (error, history) ->
-        unless error
-	    	console.log(history)
-    	else
-	    	console.log(error)
 
-	    undefined
-    )
+```coffeescript
+client.revokeToken((error) ->
+	unless error
+		console.log('Bye-bye, my token!')
+	else
+		console.log(error)
+
+	undefined
+)
+```
+
+### AccountInfo
+
+```coffeescript
+client.accountInfo((error, info) ->
+	unless error
+		console.log(info)
+	else
+		console.log(error)
+
+	undefined
+)
+```
+
+### OperationHistory
+
+```coffeescript
+client.operationHistory(type: 'deposition', start_record: 5, records: 3, (error, history) ->
+	unless error
+		console.log(history)
+	else
+		console.log(error)
+
+	undefined
+)
+```
+
 ### OperationDetails
-    client.operationDetails(operation_id: '111111111111111', (error, details) ->
-        unless error
-    		console.log(details)
-    	else
-    		console.log(error)
-    
-    	undefined
-    )
+
+```coffeescript
+client.operationDetails(operation_id: '111111111111111', (error, details) ->
+	unless error
+		console.log(details)
+	else
+		console.log(error)
+
+	undefined
+)
+```
+
 ### RequestPayment
 ### ProcessPayment
