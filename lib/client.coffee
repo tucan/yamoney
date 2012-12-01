@@ -9,23 +9,25 @@
 # Required modules
 
 https = require('https')
+qs = require('querystring')
 
 # Constants
 
 MONEY_HOST = 'money.yandex.ru'		# Host for requests
+MONEY_PORT = 443					# Port for connections
 
 # Yandex.Money client
 
 class Client
 	# Object constructor
 	
-	constructor: (@token, @host = MONEY_HOST) ->
+	constructor: (@token, @host = MONEY_HOST, @port = MONEY_PORT) ->
 	
 	# Assembles request from provided data
 	
-	assembleRequest: (data) -> (encodeURIComponent(key) + '=' + encodeURIComponent(value) for key, value of data).join('&')
+	assembleRequest: (data) -> qs.stringify(data)
 	
-	# Parses server response from JSON data
+	# Parses response to native data types
 	
 	parseResponse: (body) -> if body.length then JSON.parse(body) else {}
 	
@@ -36,36 +38,36 @@ class Client
 
 		body = @assembleRequest(options.data)
 
-		# Headers to be send
+		# Request headers
 
 		headers =
 			'authorization': 'Bearer ' + @token
 			'content-type': 'application/x-www-form-urlencoded'
 			'content-length': Buffer.byteLength(body)
 
-		#
+		# Request itself
 
-		request = https.request(host: @host, path: '/api/' + options.name, method: 'POST', headers: headers)
+		request = https.request(host: @host, port: @port, path: '/api/' + options.name, method: 'POST', headers: headers)
 
-		# On-response handler
+		# On-response handler for request
 
 		request.on('response', (response) =>
-			# Response chunks
+			# Array for response chunks
 
 			chunks = []
 
-			# On-data handler
+			# On-data handler for response
 
 			response.on('data', (chunk) =>
 
-				# Pushes arrived chunk to array
+				# Pushes arrived chunk to the array
 
 				chunks.push(chunk)
 
 				undefined
 			)
 			
-			# On-end handler
+			# On-end handler for response
 
 			response.on('end', () =>
 				# Assembles body from chunks and parses it
