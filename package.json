@@ -1,6 +1,6 @@
 {
 	"name": "yamoney",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"description": "Yandex.Money payment system client",
 	"keywords": [
 		"yandex",
