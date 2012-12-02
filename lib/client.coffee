@@ -13,8 +13,8 @@ qs = require('querystring')
 
 # Constants
 
-MONEY_HOST = 'money.yandex.ru'		# Host for requests
-MONEY_PORT = 443					# Port for connections
+MONEY_HOST = 'money.yandex.ru'		# Default host for requests
+MONEY_PORT = 443					# Default port for connections
 
 # Yandex.Money client
 
@@ -23,6 +23,13 @@ class Client
 	
 	constructor: (@token, @host = MONEY_HOST, @port = MONEY_PORT) ->
 	
+	# Generates request headers for particular body
+
+	generateHeaders: (body) ->
+		'authorization': 'Bearer ' + @token
+		'content-type': 'application/x-www-form-urlencoded'
+		'content-length': Buffer.byteLength(body)
+
 	# Assembles request from provided data
 	
 	assembleRequest: (data) -> qs.stringify(data)
@@ -40,12 +47,9 @@ class Client
 
 		# Request headers
 
-		headers =
-			'authorization': 'Bearer ' + @token
-			'content-type': 'application/x-www-form-urlencoded'
-			'content-length': Buffer.byteLength(body)
+		headers = @generateHeaders(body)
 
-		# Request itself
+		# Request object
 
 		request = https.request(host: @host, port: @port, path: '/api/' + options.name, method: 'POST', headers: headers)
 
@@ -89,7 +93,7 @@ class Client
 			undefined
 		)
 
-		# Writes data and finishes request
+		# Writes body and finishes request
 
 		request.end(body)
 
