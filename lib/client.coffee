@@ -13,7 +13,7 @@ qs = require('querystring')
 
 # Constants
 
-MONEY_HOST = 'money.yandex.ru'		# Default host for requests
+MONEY_HOST = 'money.yandex.ru'	# Default host for requests
 MONEY_PORT = 443				# Default port for connections
 
 # Yandex.Money client
@@ -80,14 +80,26 @@ class Client
 				# Tries to detect error
 
 				if data.error?
-					options.callback?.call(@, new Error(data.error))
+					options.callback?.call(@, new Error())
+
 				else if response.statusCode isnt 200
-					options.callback?.call(@, new Error('Response code is ' + response.statusCode))
+					options.callback?.call(@, new Error())
+
 				else
 					options.callback?.call(@, null, data)
 
 				undefined
 			)
+
+			undefined
+		)
+
+		# On-error handler for request
+
+		request.on('error', (error) =>
+			# Notifies application about error
+
+			options.callback?.call(@, error)
 
 			undefined
 		)
