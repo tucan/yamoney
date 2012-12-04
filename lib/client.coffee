@@ -1,6 +1,6 @@
 # Yandex.Money client
 #
-# November, 2012 year
+# December, 2012 year
 #
 # Author - Vladimir Andreev
 #
@@ -14,7 +14,7 @@ qs = require('querystring')
 # Constants
 
 MONEY_HOST = 'money.yandex.ru'		# Default host for requests
-MONEY_PORT = 443					# Default port for connections
+MONEY_PORT = 443				# Default port for connections
 
 # Yandex.Money client
 
@@ -28,15 +28,15 @@ class Client
 	generateHeaders: (body) ->
 		'authorization': 'Bearer ' + @token
 		'content-type': 'application/x-www-form-urlencoded'
-		'content-length': Buffer.byteLength(body)
+		'content-length': body.length
 
 	# Assembles request from provided data
 	
-	assembleRequest: (data) -> qs.stringify(data)
+	assembleRequest: (data, encoding) -> new Buffer(qs.stringify(data), encoding)	# Assuming default body encoding is UTF-8
 	
 	# Parses response to native data types
 	
-	parseResponse: (body) -> if body.length then JSON.parse(body) else {}
+	parseResponse: (body, encoding) -> if body.length then JSON.parse(body.toString(encoding)) else {}	# Assuming default body encoding is UTF-8
 	
 	# Sends request to payment system
 	
@@ -63,7 +63,6 @@ class Client
 			# On-data handler for response
 
 			response.on('data', (chunk) =>
-
 				# Pushes arrived chunk to the array
 
 				chunks.push(chunk)
@@ -76,7 +75,7 @@ class Client
 			response.on('end', () =>
 				# Assembles body from chunks and parses it
 
-				data = @parseResponse(chunks.join(''))
+				data = @parseResponse(Buffer.concat(chunks))
 				
 				# Tries to detect error
 
