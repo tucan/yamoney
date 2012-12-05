@@ -25,18 +25,18 @@ class Client
 	
 	# Generates request headers for particular body
 
-	generateHeaders: (body) ->
+	generateHeaders: (body, encoding) ->
 		'authorization': 'Bearer ' + @token
 		'content-type': 'application/x-www-form-urlencoded'
 		'content-length': body.length
-
-	# Assembles request from provided data
 	
-	assembleRequest: (data, encoding) -> new Buffer(qs.stringify(data), encoding)	# Assuming default body encoding is UTF-8
+	# Assembles request from provided data (ssuming default body encoding is UTF-8)
 	
-	# Parses response to native data types
+	assembleRequest: (data, encoding) -> new Buffer(qs.stringify(data), encoding)
 	
-	parseResponse: (body, encoding) -> if body.length then JSON.parse(body.toString(encoding)) else {}	# Assuming default body encoding is UTF-8
+	# Parses response to native data types (assuming default body encoding is UTF-8)
+	
+	parseResponse: (body, encoding) -> if body.length then JSON.parse(body.toString(encoding)) else {}
 	
 	# Sends request to payment system
 	
