@@ -30,7 +30,7 @@ class Client
 		'content-type': 'application/x-www-form-urlencoded'
 		'content-length': body.length
 	
-	# Assembles request from provided data (ssuming default body encoding is UTF-8)
+	# Assembles request from provided data (assuming default body encoding is UTF-8)
 	
 	assembleRequest: (data, encoding) -> new Buffer(qs.stringify(data), encoding)
 	
