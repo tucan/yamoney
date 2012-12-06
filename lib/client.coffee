@@ -56,6 +56,11 @@ class Client
 		# On-response handler for request
 
 		request.on('response', (response) =>
+			# Extracts encoding from header
+
+			charset = response.headers['content-type'].split(/\s*;\s*/)[1]
+			encoding = charset.split(/\s*=\s*/)[1] if charset?
+
 			# Array for response chunks
 
 			chunks = []
@@ -75,7 +80,7 @@ class Client
 			response.on('end', () =>
 				# Assembles body from chunks and parses it
 
-				data = @parseResponse(Buffer.concat(chunks))
+				data = @parseResponse(Buffer.concat(chunks), encoding)
 				
 				# Tries to detect error
 
