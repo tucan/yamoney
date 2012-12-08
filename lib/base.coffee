@@ -23,31 +23,31 @@ class Base
 	
 	constructor: (@token, @host = MONEY_HOST, @port = MONEY_PORT) ->
 	
-	# Returns URL path for request
+	# Returns URL path for given method
 
 	path: (name) -> '/api/' + name
 
-	# Returns request headers for particular body
+	# Generates and returns headers for given request body
 
-	headers: (body, encoding) ->
+	headers: (body, charset) ->
 		'authorization': 'Bearer ' + @token
-		'content-type': 'application/x-www-form-urlencoded'
+		'content-type': 'application/x-www-form-urlencoded; charset=' + if charset? then charset else 'utf-8'
 		'content-length': body.length
 	
-	# Returns request body for provided data (assuming default body encoding is UTF-8)
+	# Assembles request body from provided data (assuming default body charset is UTF-8)
 	
-	body: (data, encoding) -> new Buffer(qs.stringify(data), encoding)
+	assemble: (data, charset) -> new Buffer(qs.stringify(data), charset)
 	
-	# Returns parsed response body (assuming default body encoding is UTF-8)
+	# Parses response body (assuming default body charset is UTF-8)
 	
-	data: (body, encoding) -> if body.length then JSON.parse(body.toString(encoding)) else {}
+	parse: (body, charset) -> if body.length then JSON.parse(body.toString(charset)) else {}
 	
-	# Sends request to payment system
+	# Invokes pointed method on payment system
 	
-	sendRequest: (options) ->
+	invoke: (options) ->
 		# Request body
 
-		body = @body(options.data)
+		body = @assemble(options.data)
 
 		# Request object
 
@@ -75,18 +75,22 @@ class Base
 			response.on('end', () =>
 				# Combines body from chunks and parses it
 
-				data = @data(Buffer.concat(chunks))	
+				data = @parse(Buffer.concat(chunks))
 				
-				# Tries to detect error
+				# Error at protocol level
 
-				if data.error?
-					options.callback?.call(@, new Error())
+				if response.statusCode isnt 200
+					options.callback?.call(null, new Error())
+				
+				# Error at application level
 
-				else if response.statusCode isnt 200
-					options.callback?.call(@, new Error())
+				else if data.error?
+					options.callback?.call(null, new Error())
+				
+				# All is OK
 
 				else
-					options.callback?.call(@, null, data)
+					options.callback?.call(null, null, data)
 
 				undefined
 			)
@@ -97,9 +101,9 @@ class Base
 		# On-error handler for request
 
 		request.on('error', (error) =>
-			# Notifies application about error
+			# Error at network level
 
-			options.callback?.call(@, error)
+			options.callback?.call(null, error)
 
 			undefined
 		)
@@ -109,15 +113,6 @@ class Base
 		request.end(body)
 
 		@
-
-	# Creates function for calling API method with given name
-	
-	@createMethod: (name) -> (first) ->
-		options = name: name
-
-		if first instanceof Function then [options.callback] = arguments else [options.data, options.callback] = arguments
-
-		@sendRequest(options)
 
 # Exported objects
 

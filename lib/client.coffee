@@ -13,6 +13,15 @@ Base = require('./base')
 # Yandex.Money client
 
 class Client extends Base
+	# Creates function for calling API method with given name
+	
+	@createMethod: (name) -> (first) ->
+		options = name: name
+
+		if first instanceof Function then [options.callback] = arguments else [options.data, options.callback] = arguments
+
+		@invoke(options)
+
 	# Revokes token
 	
 	revokeToken: @createMethod('revoke')
