@@ -6,13 +6,9 @@
 #
 # E-Mail: volodya@netfolder.ru
 
-# Required modules
-
-Base = require('./base')
-
 # Yandex.Money client
 
-class Client extends Base
+class Client
 	# Creates function for calling API method with given name
 	
 	@createMethod: (name) -> (first) ->
@@ -20,7 +16,11 @@ class Client extends Base
 
 		if first instanceof Function then [options.callback] = arguments else [options.data, options.callback] = arguments
 
-		@invoke(options)
+		@transport.invokeMethod(options)
+
+	# Object constructor
+
+	constructor: (@transport) ->
 
 	# Revokes token
 	

@@ -1,4 +1,4 @@
-# Yandex.Money base client
+# Yandex.Money standard transport
 #
 # December, 2012 year
 #
@@ -9,6 +9,7 @@
 # Required modules
 
 https = require('https')
+iconv = require('iconv-lite')
 qs = require('querystring')
 
 # Constants
@@ -16,9 +17,9 @@ qs = require('querystring')
 MONEY_HOST = 'money.yandex.ru'	# Default host for requests
 MONEY_PORT = 443				# Default port for connections
 
-# Yandex.Money base client
+# Yandex.Money standard transport
 
-class Base
+class Transport
 	# Object constructor
 	
 	constructor: (@token, @host = MONEY_HOST, @port = MONEY_PORT) ->
@@ -27,7 +28,7 @@ class Base
 
 	path: (name) -> '/api/' + name
 
-	# Generates and returns headers for given request body
+	# Returns headers for given request body
 
 	headers: (body, charset) ->
 		'authorization': 'Bearer ' + @token
@@ -36,18 +37,18 @@ class Base
 	
 	# Assembles request body from provided data (assuming default body charset is UTF-8)
 	
-	assemble: (data, charset) -> new Buffer(qs.stringify(data), charset)
+	assembleBody: (data, charset) -> iconv.encode(qs.stringify(data), charset)
 	
 	# Parses response body (assuming default body charset is UTF-8)
 	
-	parse: (body, charset) -> if body.length then JSON.parse(body.toString(charset)) else {}
+	parseBody: (body, charset) -> if body.length then JSON.parse(iconv.decode(body, charset)) else {}
 	
 	# Invokes pointed method on payment system
 	
-	invoke: (options) ->
+	invokeMethod: (options) ->
 		# Request body
 
-		body = @assemble(options.data)
+		body = @assembleBody(options.data)
 
 		# Request object
 
@@ -75,7 +76,7 @@ class Base
 			response.on('end', () =>
 				# Combines body from chunks and parses it
 
-				data = @parse(Buffer.concat(chunks))
+				data = @parseBody(Buffer.concat(chunks))
 				
 				# Error at protocol level
 
@@ -116,4 +117,4 @@ class Base
 
 # Exported objects
 
-exports = module.exports = Base
+exports = module.exports = Transport
