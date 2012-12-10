@@ -9,43 +9,43 @@
 # Yandex.Money client
 
 class Client
-	# Creates function for calling API method with given name
+	# Object constructor
+
+	constructor: (@service) ->
+
+	# Returns function for calling API method with given name
 	
-	@createMethod: (name) -> (first) ->
+	@method: (name) -> (first) ->
 		options = name: name
 
 		if first instanceof Function then [options.callback] = arguments else [options.data, options.callback] = arguments
 
-		@transport.invokeMethod(options)
-
-	# Object constructor
-
-	constructor: (@transport) ->
+		@service.invokeMethod(options)
 
 	# Revokes token
 	
-	revokeToken: @createMethod('revoke')
+	revokeToken: @method('revoke')
 	
 	# Returns account status information
 	
-	accountInfo: @createMethod('account-info')
+	accountInfo: @method('account-info')
 	
 	# Returns operation history
 	
-	operationHistory: @createMethod('operation-history')
+	operationHistory: @method('operation-history')
 	
 	# Returns detailed operation information
 	
-	operationDetails: @createMethod('operation-details')
+	operationDetails: @method('operation-details')
 	
 	# Requests payment
 	
-	requestPayment: @createMethod('request-payment')
+	requestPayment: @method('request-payment')
 	
 	# Confirms payment
 	
-	processPayment: @createMethod('process-payment')
+	processPayment: @method('process-payment')
 
 # Exported objects
 
-exports = module.exports = Client
+module.exports = Client

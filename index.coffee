@@ -8,5 +8,5 @@
 
 # Exported objects
 
-exports.Transport = require('./lib/transport')
+exports.Service = require('./lib/service')
 exports.Client = require('./lib/client')

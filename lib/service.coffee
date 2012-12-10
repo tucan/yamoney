@@ -1,4 +1,4 @@
-# Yandex.Money standard transport
+# Yandex.Money service
 #
 # December, 2012 year
 #
@@ -9,17 +9,17 @@
 # Required modules
 
 https = require('https')
-iconv = require('iconv-lite')
 qs = require('querystring')
+iconv = require('iconv-lite')
 
 # Constants
 
 MONEY_HOST = 'money.yandex.ru'	# Default host for requests
 MONEY_PORT = 443				# Default port for connections
 
-# Yandex.Money standard transport
+# Yandex.Money service
 
-class Transport
+class Service
 	# Object constructor
 	
 	constructor: (@token, @host = MONEY_HOST, @port = MONEY_PORT) ->
@@ -117,4 +117,4 @@ class Transport
 
 # Exported objects
 
-exports = module.exports = Transport
+module.exports = Service
