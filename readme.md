@@ -13,13 +13,14 @@ $ npm install yamoney
 ```coffeescript
 #!/usr/bin/env coffee
 
-Client = require('yamoney').Client
+yamoney = require('yamoney')
+
 TEST_TOKEN = require('./token.json').access_token
 
-client = new Client(TEST_TOKEN)
+client = new yamoney.Client(new yamoney.Service(TEST_TOKEN))
 
 client.accountInfo((error, data) ->
-	unless error
+	unless error?
 		console.log('Account: ' + data.account)
 		console.log('Currency: ' + data.currency)
 		console.log('Balance: ' + data.balance)
@@ -30,13 +31,17 @@ client.accountInfo((error, data) ->
 
 # API Documentation
 
-## Methods
+## Client
 
-### RevokeToken
+### constructor(service)
+
+### revokeToken([callback])
+
+Next example revokes your token, so you will not be able to use it any longer.
 
 ```coffeescript
 client.revokeToken((error) ->
-	unless error
+	unless error?
 		console.log('Bye-bye, my token!')
 	else
 		console.log(error)
@@ -45,11 +50,11 @@ client.revokeToken((error) ->
 )
 ```
 
-### AccountInfo
+### accountInfo([callback])
 
 ```coffeescript
 client.accountInfo((error, info) ->
-	unless error
+	unless error?
 		console.log(info)
 	else
 		console.log(error)
@@ -58,11 +63,11 @@ client.accountInfo((error, info) ->
 )
 ```
 
-### OperationHistory
+### operationHistory([query[, callback]])
 
 ```coffeescript
 client.operationHistory(type: 'deposition', start_record: 5, records: 3, (error, history) ->
-	unless error
+	unless error?
 		console.log(history)
 	else
 		console.log(error)
@@ -71,11 +76,11 @@ client.operationHistory(type: 'deposition', start_record: 5, records: 3, (error,
 )
 ```
 
-### OperationDetails
+### operationDetails(query[, callback])
 
 ```coffeescript
 client.operationDetails(operation_id: '111111111111111', (error, details) ->
-	unless error
+	unless error?
 		console.log(details)
 	else
 		console.log(error)
@@ -84,5 +89,29 @@ client.operationDetails(operation_id: '111111111111111', (error, details) ->
 )
 ```
 
-### RequestPayment
-### ProcessPayment
+### requestPayment(query[, callback])
+### processPayment(query[, callback])
+
+## Service
+
+Usually you need not to use Service class directly, but in some cases in can be usefull.
+
+### constructor(token[, host[, port]])
+### path(name)
+### headers(body, charset)
+
+Let's now add custom header which will be sent to Yandex.Money:
+
+```coffeescript
+extend = require('extend')
+Service = require('yamoney').Service
+
+class MyService extends Service
+	# My funny header generator
+	
+	headers: () ->
+		extend(super, 'user-agent': 'my cool client')
+```
+### assembleBody(data, charset)
+### parseBody(body, charset)
+### invokeMethod(options)
