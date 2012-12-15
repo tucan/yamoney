@@ -12,25 +12,28 @@ https = require('https')
 qs = require('querystring')
 iconv = require('iconv-lite')
 
-# Constants
-
-MONEY_HOST = 'money.yandex.ru'	# Default host for requests
-MONEY_PORT = 443				# Default port for connections
-
 # Yandex.Money service
 
 class Service
+	# Default host for requests
+
+	@DEFAULT_HOST: 'money.yandex.ru'
+
+	# Default port for connections
+
+	@DEFAULT_PORT: 443
+
 	# Object constructor
 	
-	constructor: (@token, @host = MONEY_HOST, @port = MONEY_PORT) ->
+	constructor: (@token, @host = @constructor.DEFAULT_HOST, @port = @constructor.DEFAULT_PORT) ->
 	
 	# Returns URL path for given method
 
-	path: (name) -> '/api/' + name
+	generatePath: (name) -> '/api/' + name
 
-	# Returns headers for given request body
+	# Creates headers for given request body
 
-	headers: (body, charset) ->
+	prepareHeaders: (body, charset) ->
 		'authorization': 'Bearer ' + @token
 		'content-type': 'application/x-www-form-urlencoded; charset=' + if charset? then charset else 'utf-8'
 		'content-length': body.length
@@ -42,7 +45,7 @@ class Service
 	# Parses response body (assuming default body charset is UTF-8)
 	
 	parseBody: (body, charset) -> if body.length then JSON.parse(iconv.decode(body, charset)) else {}
-	
+
 	# Invokes pointed method on payment system
 	
 	invokeMethod: (options) ->
@@ -52,7 +55,13 @@ class Service
 
 		# Request object
 
-		request = https.request(host: @host, port: @port, path: @path(options.name), method: 'POST', headers: @headers(body))
+		request = https.request(
+			host: @host
+			port: @port
+			path: @generatePath(options.name)
+			method: 'POST'
+			headers: @prepareHeaders(body)
+		)
 
 		# On-response handler for request
 
@@ -75,23 +84,12 @@ class Service
 
 			response.on('end', () =>
 				# Combines body from chunks and parses it
-
+				
 				data = @parseBody(Buffer.concat(chunks))
-				
-				# Error at protocol level
 
-				if response.statusCode isnt 200
-					options.callback?.call(null, new Error())
-				
-				# Error at application level
+				# Error handling
 
-				else if data.error?
-					options.callback?.call(null, new Error())
-				
-				# All is OK
-
-				else
-					options.callback?.call(null, null, data)
+				if response.statusCode is 200 then options.onComplete?(null, data) else options.onComplete?(new Error())
 
 				undefined
 			)
@@ -102,9 +100,9 @@ class Service
 		# On-error handler for request
 
 		request.on('error', (error) =>
-			# Error at network level
+			# Error handling
 
-			options.callback?.call(null, error)
+			options.onComplete?(new Error())
 
 			undefined
 		)

@@ -15,36 +15,36 @@ class Client
 
 	# Returns function for calling API method with given name
 	
-	@method: (name) -> (first) ->
+	@createMethod: (name) -> (first) ->
 		options = name: name
 
-		if first instanceof Function then [options.callback] = arguments else [options.data, options.callback] = arguments
+		if first instanceof Function then [options.onComplete] = arguments else [options.data, options.onComplete] = arguments
 
 		@service.invokeMethod(options)
 
 	# Revokes token
 	
-	revokeToken: @method('revoke')
+	revokeToken: @createMethod('revoke')
 	
 	# Returns account status information
 	
-	accountInfo: @method('account-info')
+	accountInfo: @createMethod('account-info')
 	
 	# Returns operation history
 	
-	operationHistory: @method('operation-history')
+	operationHistory: @createMethod('operation-history')
 	
 	# Returns detailed operation information
 	
-	operationDetails: @method('operation-details')
+	operationDetails: @createMethod('operation-details')
 	
 	# Requests payment
 	
-	requestPayment: @method('request-payment')
+	requestPayment: @createMethod('request-payment')
 	
 	# Confirms payment
 	
-	processPayment: @method('process-payment')
+	processPayment: @createMethod('process-payment')
 
 # Exported objects
 
