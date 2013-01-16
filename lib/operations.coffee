@@ -46,9 +46,7 @@ class Operations
 	#
 
 	info: (callback) ->
-		data = extend(details: false, @query)
-
-		@service.invoke(method: 'post', name: 'operation-history', data: data, onComplete: (error, history) ->
+		@service.invoke(method: 'post', name: 'operation-history', data: extend(details: false, @query), onComplete: (error, history) ->
 			callback(error, history)
 
 			undefined
@@ -59,10 +57,8 @@ class Operations
 	#
 
 	details: (callback) ->
-		data = extend(details: true, @query)
-
-		@service.invoke(method: 'POST', name: 'operation-history', data: data, onComplete: (error, history) ->
-			callback(error, history.operations)
+		@service.invoke(method: 'post', name: 'operation-history', data: extend(details: true, @query), onComplete: (error, history) ->
+			callback(error, history)
 
 			undefined
 		)
