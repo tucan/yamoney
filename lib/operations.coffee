@@ -31,7 +31,7 @@ class Operations
 
 	skip: (count) ->
 		if count? then @query.start_record = String(count)
-		else if count is null then delete @query.start_record
+		else delete @query.start_record
 
 		@
 
@@ -39,14 +39,14 @@ class Operations
 
 	limit: (count) ->
 		if count? then @query.records = Math.round(count)
-		else if count is null then delete @query.records
+		else delete @query.records
 
 		@
 
 	#
 
 	info: (callback) ->
-		@service.invoke(method: 'post', name: 'operation-history', data: extend(details: false, @query), onComplete: (error, history) ->
+		@service.invoke(name: 'operation-history', method: 'post', data: extend(details: false, @query), onComplete: (error, history) ->
 			callback(error, history)
 
 			undefined
@@ -57,7 +57,7 @@ class Operations
 	#
 
 	details: (callback) ->
-		@service.invoke(method: 'post', name: 'operation-history', data: extend(details: true, @query), onComplete: (error, history) ->
+		@service.invoke(name: 'operation-history', method: 'post', data: extend(details: true, @query), onComplete: (error, history) ->
 			callback(error, history)
 
 			undefined
