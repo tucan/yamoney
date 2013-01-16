@@ -22,46 +22,36 @@ class Operations
 
 	filter: (selector) ->
 		if selector?
-			@query.label = String(selector.label) if selector.label?
-			@query.type = selector.type.join(' ') if selector.type?
+			if selector.label? then @query.label = String(selector.label) else delete @query.label
+			if selector.type? then @query.type = selector.type.join(' ') else delete @query.type
 
 		@
 
 	# Skips pointed number of records
 
 	skip: (count) ->
-		if count? then @query.start_record = String(count)
-		else delete @query.start_record
+		if count? then @query.start_record = String(count) else delete @query.start_record
 
 		@
 
 	# Limits number of records
 
 	limit: (count) ->
-		if count? then @query.records = Math.round(count)
-		else delete @query.records
+		if count? then @query.records = Math.round(count) else delete @query.records
 
 		@
 
 	#
 
 	info: (callback) ->
-		@service.invoke(name: 'operation-history', method: 'post', data: extend(details: false, @query), onComplete: (error, history) ->
-			callback(error, history)
-
-			undefined
-		)
+		@service.invoke(name: 'operation-history', method: 'post', data: extend(details: false, @query), onComplete: callback)
 
 		@
 
 	#
 
 	details: (callback) ->
-		@service.invoke(name: 'operation-history', method: 'post', data: extend(details: true, @query), onComplete: (error, history) ->
-			callback(error, history)
-
-			undefined
-		)
+		@service.invoke(name: 'operation-history', method: 'post', data: extend(details: true, @query), onComplete: callback)
 
 		@
 

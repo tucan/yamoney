@@ -8,111 +8,45 @@
 
 # Required modules
 
-https = require('https')
-qs = require('querystring')
 iconv = require('iconv-lite')
+qs = require('querystring')
+WebService = require('../../web-client').WebService
 
 # Yandex.Money service
 
-class Service
-	# Default host for requests
+class MoneyService extends WebService
+	# Constants
 
-	@DEFAULT_HOST: 'money.yandex.ru'
-
-	# Default port for connections
-
-	@DEFAULT_PORT: 443
+	@DEFAULT_HOST: 'money.yandex.ru'	# Default host for connections
+	@DEFAULT_PORT: 443					# Default port for connections
 
 	# Object constructor
 	
-	constructor: (@token, @host = @constructor.DEFAULT_HOST, @port = @constructor.DEFAULT_PORT) ->
+	constructor: (@token, host = @constructor.DEFAULT_HOST, port = @constructor.DEFAULT_PORT) ->
+		throw new Error('Token is undefined') unless @token?
+		super(host, port)
 	
 	# Returns URL path for given method
 
-	generatePath: (name) -> '/api/' + name
+	path: (options) -> '/api/' + options.name
 
-	# Creates headers for given request body
+	# Returns headers for given request body
 
-	prepareHeaders: (body, charset) ->
+	headers: (body) ->
 		'authorization': 'Bearer ' + @token
-		'content-type': 'application/x-www-form-urlencoded; charset=' + if charset? then charset else 'utf-8'
+		'content-type': 'application/x-www-form-urlencoded; charset=' + @charset
 		'content-length': body.length
-	
-	# Assembles request body from provided data (assuming default body charset is UTF-8)
-	
-	assembleBody: (data, charset) -> iconv.encode(qs.stringify(data), charset)
-	
-	# Parses response body (assuming default body charset is UTF-8)
-	
-	parseBody: (body, charset) -> if body.length then JSON.parse(iconv.decode(body, charset)) else {}
 
-	# Invokes pointed method on payment system
-	
-	invokeMethod: (options) ->
-		# Request body
+	# Returns request body for provided data
 
-		body = @assembleBody(options.data)
+	body: (options) -> iconv.encode(qs.stringify(options.data), @charset)
 
-		# Request object
+	# Parses response body
 
-		request = https.request(
-			host: @host
-			port: @port
-			path: @generatePath(options.name)
-			method: 'POST'
-			headers: @prepareHeaders(body)
-		)
-
-		# On-response handler for request
-
-		request.on('response', (response) =>
-			# Array for response chunks
-
-			chunks = []
-
-			# On-data handler for response
-
-			response.on('data', (chunk) =>
-				# Pushes arrived chunk to the array
-
-				chunks.push(chunk)
-
-				undefined
-			)
-			
-			# On-end handler for response
-
-			response.on('end', () =>
-				# Combines body from chunks and parses it
-				
-				data = @parseBody(Buffer.concat(chunks))
-
-				# Error handling
-
-				if response.statusCode is 200 then options.onComplete?(null, data) else options.onComplete?(new Error())
-
-				undefined
-			)
-
-			undefined
-		)
-
-		# On-error handler for request
-
-		request.on('error', (error) =>
-			# Error handling
-
-			options.onComplete?(new Error())
-
-			undefined
-		)
-
-		# Writes body and finishes request
-
-		request.end(body)
-
-		@
+	parse: (data, contentType) ->
+		switch contentType
+			when 'application/json' then @parseJSON(data)
 
 # Exported objects
 
-module.exports = Service
+module.exports = MoneyService

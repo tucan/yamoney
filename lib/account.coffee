@@ -9,6 +9,16 @@
 # Yandex.Money account
 
 class Account
+	#
+
+	constructor: (@service) ->
+
+	#
+
+	info: (callback) ->
+		@service.invoke(method: 'post', name: 'account-info', onComplete: callback)
+
+		@
 
 # Exported objects
 
