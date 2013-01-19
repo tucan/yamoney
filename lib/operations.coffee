@@ -18,7 +18,7 @@ class Operations
 	constructor: (@service) ->
 		@query = {}
 
-	# Filters records using selector
+	# Filters records using provided selector
 
 	filter: (selector) ->
 		if selector?.label? then @query.label = String(selector.label) else delete @query.label
