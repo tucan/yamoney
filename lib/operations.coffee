@@ -18,12 +18,11 @@ class Operations
 	constructor: (@service) ->
 		@query = {}
 
-	#
+	# Filters records using selector
 
 	filter: (selector) ->
-		if selector?
-			if selector.label? then @query.label = String(selector.label) else delete @query.label
-			if selector.type? then @query.type = selector.type.join(' ') else delete @query.type
+		if selector?.label? then @query.label = String(selector.label) else delete @query.label
+		if selector?.type? then @query.type = selector.type.join(' ') else delete @query.type
 
 		@
 
@@ -44,14 +43,14 @@ class Operations
 	#
 
 	info: (callback) ->
-		@service.invoke(name: 'operation-history', method: 'post', data: extend(details: false, @query), onComplete: callback)
+		@service.invoke(method: 'post', name: 'operation-history', data: extend(details: false, @query), onComplete: callback)
 
 		@
 
 	#
 
 	details: (callback) ->
-		@service.invoke(name: 'operation-history', method: 'post', data: extend(details: true, @query), onComplete: callback)
+		@service.invoke(method: 'post', name: 'operation-history', data: extend(details: true, @query), onComplete: callback)
 
 		@
 
