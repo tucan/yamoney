@@ -1,6 +1,6 @@
 # Yandex.Money operations
 #
-# January, 2013 year
+# February, 2013 year
 #
 # Author - Vladimir Andreev
 #
@@ -16,41 +16,34 @@ class Operations
 	# Object constructor
 
 	constructor: (@service) ->
-		@query = {}
 
-	# Filters records using provided selector
+	# Filters items using provided condition
 
-	filter: (selector) ->
-		if selector?.label? then @query.label = String(selector.label) else delete @query.label
-		if selector?.type? then @query.type = selector.type.join(' ') else delete @query.type
+	filter: (condition) ->
+		if condition? then @$filter = condition else delete @$filter
 
 		@
 
-	# Skips pointed number of records
+	# Skips pointed number of items
 
 	skip: (count) ->
-		if count? then @query.start_record = String(count) else delete @query.start_record
+		if count? then @$skip = String(count) else delete @$skip
 
 		@
 
-	# Limits number of records
+	# Limits number of items
 
 	limit: (count) ->
-		if count? then @query.records = Math.round(count) else delete @query.records
+		if count? then @$limit = Math.round(count) else delete @$limit
 
 		@
 
-	#
+	# Converts deferred list to array
 
-	info: (callback) ->
-		@service.invoke(method: 'post', name: 'operation-history', data: extend(details: false, @query), onComplete: callback)
+	toArray: (callback) ->
+		data = extend({}, start_record: @$skip, records: @$limit, @$filter)
 
-		@
-
-	#
-
-	details: (callback) ->
-		@service.invoke(method: 'post', name: 'operation-history', data: extend(details: true, @query), onComplete: callback)
+		@service.invoke(method: 'post', name: 'operation-history', data: data, callback: callback)
 
 		@
 
