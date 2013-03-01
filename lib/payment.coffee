@@ -1,6 +1,6 @@
 # Yandex.Money payment
 #
-# January, 2013 year
+# March, 2013 year
 #
 # Author - Vladimir Andreev
 #
@@ -17,13 +17,6 @@ class Payment
 
 	constructor: (@service) ->
 		@data = {}
-
-	#
-
-	recipient: (data) ->
-		@data.pattern_id = data.id
-
-		@
 	
 	#
 

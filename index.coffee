@@ -1,4 +1,4 @@
-# Classes for dealing with Yandex.Money
+# Yandex.Money classes
 #
 # November, 2012 year
 #
@@ -10,5 +10,6 @@
 
 exports.Service = require('./lib/service')
 exports.Account = require('./lib/account')
-exports.OperationList = require('./lib/operation-list')
 exports.Payment = require('./lib/payment')
+
+exports.OperationList = require('./lib/operation-list')

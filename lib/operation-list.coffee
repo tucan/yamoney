@@ -1,4 +1,4 @@
-# Yandex.Money Operation List
+# Yandex.Money operation List
 #
 # February, 2013 year
 #
