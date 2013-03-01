@@ -1,10 +1,11 @@
 {
 	"name": "yamoney",
-	"version": "0.1.8",
+	"version": "0.1.9",
 	"description": "Client for Yandex.Money payment system",
 	"keywords": [
 		"yandex",
-		"money"
+		"money",
+		"payment"
 	],
 	"author": {
 		"name": "Vladimir Andreev",

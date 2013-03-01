@@ -10,5 +10,5 @@
 
 exports.Service = require('./lib/service')
 exports.Account = require('./lib/account')
-exports.Operations = require('./lib/operations')
+exports.OperationList = require('./lib/operation-list')
 exports.Payment = require('./lib/payment')

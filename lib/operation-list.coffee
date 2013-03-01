@@ -1,4 +1,4 @@
-# Yandex.Money operations
+# Yandex.Money Operation List
 #
 # February, 2013 year
 #
@@ -10,35 +10,35 @@
 
 extend = require('extend')
 
-# Yandex.Money operations
+# Operation List
 
-class Operations
+class OperationList
 	# Object constructor
 
 	constructor: (@service) ->
 
-	# Filters items using provided condition
+	# Filter items using provided condition
 
 	filter: (condition) ->
 		if condition? then @$filter = condition else delete @$filter
 
 		@
 
-	# Skips pointed number of items
+	# Skip pointed number of items
 
 	skip: (count) ->
 		if count? then @$skip = String(count) else delete @$skip
 
 		@
 
-	# Limits number of items
+	# Limit number of items
 
 	limit: (count) ->
 		if count? then @$limit = Math.round(count) else delete @$limit
 
 		@
 
-	# Converts deferred list to array
+	# Convert list to array
 
 	toArray: (callback) ->
 		data = extend({}, start_record: @$skip, records: @$limit, @$filter)
@@ -49,4 +49,4 @@ class Operations
 
 # Exported objects
 
-module.exports = Operations
+module.exports = OperationList

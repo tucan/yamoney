@@ -16,48 +16,26 @@ class Payment
 	# Object constructor
 
 	constructor: (@service) ->
-		@info = {}
+		@data = {}
 
 	#
 
-	dest: (data) ->
-		@info.pattern_id = data.id
-
-		@
-
-	#
-
-	params: (params) ->
-		@params = params
+	recipient: (data) ->
+		@data.pattern_id = data.id
 
 		@
 	
 	#
 
 	request: (callback) ->
-		@service.invoke(method: 'post', name: 'request-payment', data: extend(pattern_id: @info.pattern_id, @params), onComplete: (error, request) =>
-			@info.request_id = request.request_id
-			@info.status = request.status
-
-			callback(error, request)
-
-			undefined
-		)
+		@service.invoke(method: 'post', name: 'request-payment', data: null, onComplete: callback)
 
 		@
 
 	#
 
 	process: (callback) ->
-		@service.invoke(method: 'post', name: 'process-payment', data: (request_id: @info.request_id), onComplete: (error, p) =>
-			delete @info.request_id
-			@info.operation_id = p.payment_id
-			@info.status = p.status
-
-			callback(error, p)
-
-			undefined
-		)
+		@service.invoke(method: 'post', name: 'process-payment', data: null, onComplete: callback)
 
 		@
 

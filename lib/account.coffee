@@ -9,7 +9,7 @@
 # Yandex.Money account
 
 class Account
-	#
+	# Object constructor
 
 	constructor: (@service) ->
 
