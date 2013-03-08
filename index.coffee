@@ -9,7 +9,12 @@
 # Exported objects
 
 exports.Service = require('./lib/service')
+
+#
+
 exports.Account = require('./lib/account')
 exports.Payment = require('./lib/payment')
+
+#
 
 exports.OperationList = require('./lib/operation-list')

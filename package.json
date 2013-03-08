@@ -16,6 +16,13 @@
 		"url": "https://github.com/silentpay/yamoney.git"
 	},
 	"dependencies": {
-		"iconv-lite": ">=0.2"
+		"iconv-lite": ">=0.2",
+		"extend": ">=1.1"
+	},
+	"devDependencies": {
+		"coffee-script": ">=1.4"
+	},
+	"scripts": {
+		"prepublish": "coffee -c -b -o lib src"
 	}
 }
