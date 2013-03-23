@@ -17,7 +17,7 @@ class OperationList extends LazyList
 	# Retrieve information about operations in the list
 
 	info: (callback) ->
-		data = extend({}, start_record: @$skip, records: @$limit, @$filter)
+		data = extend(details: true, start_record: @$skip, records: @$limit, @$filter)
 
 		@service.invoke(method: 'post', name: 'operation-history', data: data, callback: (error, data) ->
 			if error? then callback(error) else callback(error, data.operations)

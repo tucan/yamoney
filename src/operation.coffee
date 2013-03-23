@@ -1,4 +1,4 @@
-# Yandex.Money payment
+# Yandex.Money operation
 #
 # March, 2013 year
 #
@@ -6,28 +6,29 @@
 #
 # E-Mail: volodya@netfolder.ru
 
-# Payment
+# Operation
 
-class Payment
+class Operation
 	# Object constructor
 
-	constructor: (@service) ->
-		@data = {}
+	constructor: (@service, @data = {}) ->
 	
-	#
+	# Requests payment. CREATE & READ
 
 	request: (callback) ->
-		@service.invoke(method: 'post', name: 'request-payment', data: null, onComplete: callback)
+		@service.invoke(method: 'post', name: 'request-payment', data: @data, callback: callback)
 
 		@
 
 	#
 
 	process: (callback) ->
-		@service.invoke(method: 'post', name: 'process-payment', data: null, onComplete: callback)
+		data = request_id: @data.request_id
+
+		@service.invoke(method: 'post', name: 'process-payment', data: data, callback: callback)
 
 		@
 
 # Exported objects
 
-module.exports = Payment
+module.exports = Operation
