@@ -8,110 +8,45 @@ _yamoney_ provides you with easy and nice interface in order to access Yandex.Mo
 $ npm install yamoney
 ```
 
-# Examples
-
-```coffeescript
-#!/usr/bin/env coffee
-
-yamoney = require('yamoney')
-
-TEST_TOKEN = require('./token.json').access_token
-
-client = new yamoney.Client(new yamoney.Service(TEST_TOKEN))
-
-client.accountInfo((error, data) ->
-	unless error?
-		console.log('Account: ' + data.account)
-		console.log('Currency: ' + data.currency)
-		console.log('Balance: ' + data.balance)
-
-	undefined
-)
-```
-
 # API Documentation
 
-## Client
+## Account
 
-### constructor(service)
+This class represents account into payment system.
 
-### revokeToken([callback])
+### .info()
 
-Next example revokes your token, so you will not be able to use it any longer.
+Returns information about account.
 
-```coffeescript
-client.revokeToken((error) ->
-	unless error?
-		console.log('Bye-bye, my token!')
-	else
-		console.log(error)
+## Operation
 
-	undefined
-)
-```
+This class represents operation (payment or deposition).
 
-### accountInfo([callback])
+### .info()
 
-```coffeescript
-client.accountInfo((error, info) ->
-	unless error?
-		console.log(info)
-	else
-		console.log(error)
+Returns information about operation.
 
-	undefined
-)
-```
+## List
 
-### operationHistory([query[, callback]])
+Represents a list of items.
 
-```coffeescript
-client.operationHistory(type: 'deposition', start_record: 5, records: 3, (error, history) ->
-	unless error?
-		console.log(history)
-	else
-		console.log(error)
+### .filter(condition)
 
-	undefined
-)
-```
+- `condition` Object
+- `return` List
 
-### operationDetails(query[, callback])
+Selects items which satisfy provided condition.
 
-```coffeescript
-client.operationDetails(operation_id: '111111111111111', (error, details) ->
-	unless error?
-		console.log(details)
-	else
-		console.log(error)
+### .skip(count)
 
-	undefined
-)
-```
+- `count` Number
+- `return` List
 
-### requestPayment(query[, callback])
-### processPayment(query[, callback])
+Skips pointed number of items.
 
-## Service
+### .limit(count)
 
-Usually you need not to use Service class directly, but in some cases in can be usefull.
+- `count` Number
+- `return` List
 
-### constructor(token[, host[, port]])
-### path(name)
-### headers(body, charset)
-
-Let's now add custom header which will be sent to Yandex.Money:
-
-```coffeescript
-extend = require('extend')
-Service = require('yamoney').Service
-
-class MyService extends Service
-	# My funny header generator
-	
-	headers: () ->
-		extend(super, 'user-agent': 'my cool client')
-```
-### assembleBody(data, charset)
-### parseBody(body, charset)
-### invokeMethod(options)
+Limits number of items to provided value.
