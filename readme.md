@@ -30,6 +30,19 @@ Returns information about operation.
 
 Represents a list of items.
 
+### Examples
+
+```coffeescript
+operations = account.operations()
+
+operations.filter(type: 'deposition').skip(10).count(25).toArray((error, data) ->
+  unless error? then console.log(data) else console.log(error)
+  
+  undefined
+)
+
+```
+
 ### .filter(condition)
 
 - `condition` Object
