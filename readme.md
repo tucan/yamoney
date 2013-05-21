@@ -18,13 +18,21 @@ This class represents account into payment system.
 
 Returns information about account.
 
+## Request
+
+This class represents request for payment.
+
 ## Operation
 
 This class represents operation (payment or deposition).
 
-### .info()
+### .request()
 
-Returns information about operation.
+Requests payment.
+
+### .details()
+
+Returns details of operation.
 
 ## List
 
