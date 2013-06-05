@@ -13,7 +13,7 @@ exports.Service = require('./lib/service')
 #
 
 exports.Account = require('./lib/account')
-exports.Payment = require('./lib/payment')
+exports.Operation = require('./lib/operation')
 
 #
 

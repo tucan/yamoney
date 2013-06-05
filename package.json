@@ -1,12 +1,8 @@
 {
 	"name": "yamoney",
-	"version": "0.1.9",
+	"version": "0.1.0",
 	"description": "Client for Yandex.Money payment system",
-	"keywords": [
-		"yandex",
-		"money",
-		"payment"
-	],
+	"keywords": ["yandex", "money", "payment"],
 	"author": {
 		"name": "Vladimir Andreev",
 		"email": "volodya@netfolder.ru"
@@ -16,13 +12,13 @@
 		"url": "https://github.com/silentpay/yamoney.git"
 	},
 	"dependencies": {
-		"iconv-lite": "0.x",
-		"extend": "1.x"
+		"iconv-lite": "0.x"
 	},
 	"devDependencies": {
 		"coffee-script": "1.x"
 	},
 	"scripts": {
-		"prepublish": "coffee -c -b -o lib src"
-	}
+		"prepublish": "./node_modules/.bin/coffee -c -b -o lib src"
+	},
+	"main": "./lib/index"
 }
