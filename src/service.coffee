@@ -1,6 +1,6 @@
 # Yandex.Money service
 #
-# December, 2012 year
+# June, 2013 year
 #
 # Author - Vladimir Andreev
 #
@@ -9,8 +9,8 @@
 # Required modules
 
 https = require('https')
-iconv = require('iconv-lite')
 qs = require('querystring')
+iconv = require('iconv-lite')
 
 # Constants
 
@@ -23,7 +23,7 @@ DEFAULT_CHARSET = 'utf-8'			# Default charset for requests
 class Service
 	# Object constructor
 	
-	constructor: (@token, @host = DEFAULT_HOST, @port = DEFAULT_PORT, @charset = DEFAULT_CHARSET) ->
+	constructor: (@token) ->
 
 	# Returns URL path for given method
 
@@ -36,9 +36,13 @@ class Service
 		'content-type': 'application/x-www-form-urlencoded; charset=' + @charset
 		'content-length': body.length
 
-	# Returns request body for provided data
+	# Serializes provided data
 
-	body: (options) -> iconv.encode(qs.stringify(options.data), @charset)
+	serialize: (data) -> qs.stringify(data)
+
+	#
+
+	encode: (text) -> iconv.encode(text, 'utf-8')
 
 	# Parses response body
 
@@ -59,11 +63,7 @@ class Service
 
 		# Assign event handlers for request
 
-		request.on('response', (response) =>
-			# Try to detect content type and charset
-			
-			[contentType, parameters] = response.headers['content-type'].split(/;\s*/)
-
+		request.on('response', (response) ->
 			# Array for response chunks
 
 			chunks = []
@@ -78,14 +78,14 @@ class Service
 				undefined
 			)
 
-			response.on('end', () =>
+			response.on('end', () ->
 				# Combine body from chunks and parse it
 
-				data = @parse(Buffer.concat(chunks), contentType)
+				data = Buffer.concat(chunks)
 
 				# Error handling
 
-				if response.statusCode is 200 then options.callback?(null, data) else options.callback?(new Error(), data)
+				options.callback?(null, data)
 
 				undefined
 			)
@@ -93,10 +93,10 @@ class Service
 			undefined
 		)
 
-		request.on('error', (error) =>
+		request.on('error', (error) ->
 			# Error handling
 
-			options.callback?(new Error('Network error'))
+			options.callback?(error)
 
 			undefined
 		)

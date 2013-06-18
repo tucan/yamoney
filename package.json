@@ -1,12 +1,9 @@
 {
 	"name": "yamoney",
 	"version": "0.1.0",
-	"description": "Client for Yandex.Money payment system",
+	"description": "Client for Yandex.Money",
 	"keywords": ["yandex", "money", "payment"],
-	"author": {
-		"name": "Vladimir Andreev",
-		"email": "volodya@netfolder.ru"
-	},
+	"main": "./lib/index",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/silentpay/yamoney.git"
@@ -20,5 +17,8 @@
 	"scripts": {
 		"prepublish": "./node_modules/.bin/coffee -c -b -o lib src"
 	},
-	"main": "./lib/index"
+	"author": {
+		"name": "Vladimir Andreev",
+		"email": "volodya@netfolder.ru"
+	}
 }
