@@ -23,47 +23,42 @@ DEFAULT_CHARSET = 'utf-8'			# Default charset for requests
 class Service
 	# Object constructor
 	
-	constructor: (@token) ->
+	constructor: (@token, @host = DEFAULT_HOST, @port = DEFAULT_PORT, @charset = DEFAULT_CHARSET) ->
 
 	# Returns URL path for given method
 
-	path: (options) -> '/api/' + options.name
+	_path: (options) -> '/api/' + options.method
 
 	# Returns headers for given request body
 
-	headers: (body) ->
-		'authorization': 'Bearer ' + @token
-		'content-type': 'application/x-www-form-urlencoded; charset=' + @charset
-		'content-length': body.length
+	_headers: (body) ->
+		'Authorization': 'Bearer ' + @token
+		'Content-type': 'application/x-www-form-urlencoded; charset=' + @charset
+		'Content-length': body.length
 
 	# Serializes provided data
 
-	serialize: (data) -> qs.stringify(data)
-
-	#
-
-	encode: (text) -> iconv.encode(text, 'utf-8')
+	_serialize: (data) -> iconv.encode(qs.stringify(data), @charset)
 
 	# Parses response body
 
-	parse: (data, contentType) ->
-		switch contentType
-			when 'application/json' then JSON.parse(iconv.decode(data))
+	_parse: (data) -> JSON.parse(iconv.decode(data, 'utf-8'))
 
 	# Invokes pointed method on the server
 	
 	invoke: (options) ->
-		# Request body
+		# Prepare request body and headers
 
-		body = @body(options)
+		body = @_serialize(options.data)
+		headers = @_headers(body)
 
 		# Create request
 
-		request = https.request(host: @host, port: @port, method: options.method, path: @path(options), headers: @headers(body))
+		request = https.request(host: @host, port: @port, method: 'POST', path: @_path(options), headers: headers)
 
 		# Assign event handlers for request
 
-		request.on('response', (response) ->
+		request.on('response', (response) =>
 			# Array for response chunks
 
 			chunks = []
@@ -78,14 +73,14 @@ class Service
 				undefined
 			)
 
-			response.on('end', () ->
+			response.on('end', () =>
 				# Combine body from chunks and parse it
 
 				data = Buffer.concat(chunks)
 
 				# Error handling
 
-				options.callback?(null, data)
+				options.callback?(null, @_parse(data))
 
 				undefined
 			)

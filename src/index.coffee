@@ -1,6 +1,6 @@
 # Yandex.Money classes
 #
-# November, 2012 year
+# June, 2013 year
 #
 # Author - Vladimir Andreev
 #
@@ -8,13 +8,4 @@
 
 # Exported objects
 
-exports.Service = require('./lib/service')
-
-#
-
-exports.Account = require('./lib/account')
-exports.Operation = require('./lib/operation')
-
-#
-
-exports.OperationList = require('./lib/operation-list')
+exports.Service = require('./service')
