@@ -29,32 +29,33 @@ class Service
 
 	_path: (options) -> '/api/' + options.method
 
+	# Serializes provided data
+
+	_body: (data) -> iconv.encode(qs.stringify(data), @charset)
+
 	# Returns headers for given request body
 
 	_headers: (body) ->
 		'Authorization': 'Bearer ' + @token
-		'Content-type': 'application/x-www-form-urlencoded; charset=' + @charset
-		'Content-length': body.length
-
-	# Serializes provided data
-
-	_serialize: (data) -> iconv.encode(qs.stringify(data), @charset)
+		'Content-Type': 'application/x-www-form-urlencoded; charset=' + @charset
+		'Content-Length': body.length
 
 	# Parses response body
 
-	_parse: (data) -> JSON.parse(iconv.decode(data, 'utf-8'))
+	_data: (body) -> JSON.parse(iconv.decode(body, 'utf-8'))
 
 	# Invokes pointed method on the server
 	
 	invoke: (options) ->
 		# Prepare request body and headers
 
-		body = @_serialize(options.data)
+		body = @_body(options.data)
 		headers = @_headers(body)
+		path = @_path(options)
 
 		# Create request
 
-		request = https.request(host: @host, port: @port, method: 'POST', path: @_path(options), headers: headers)
+		request = https.request(host: @host, port: @port, method: 'POST', path: path, headers: headers)
 
 		# Assign event handlers for request
 
@@ -80,7 +81,7 @@ class Service
 
 				# Error handling
 
-				options.callback?(null, @_parse(data))
+				options.callback?(null, @_data(data))
 
 				undefined
 			)
