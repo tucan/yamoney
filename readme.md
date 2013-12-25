@@ -1,4 +1,4 @@
-# Yandex.Money
+# YaMoney
 
 _yamoney_ provides you with easy and nice interface in order to access Yandex.Money payment system.
 
