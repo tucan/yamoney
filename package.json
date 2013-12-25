@@ -1,12 +1,13 @@
 {
 	"name": "yamoney",
-	"version": "0.1.0",
+	"version": "0.1.0-beta",
 	"description": "Client for Yandex.Money",
 	"keywords": ["yandex", "money", "payment"],
 	"main": "./lib/index",
+	"licence": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/silentpay/yamoney.git"
+		"url": "https://github.com/tucan/yamoney.git"
 	},
 	"dependencies": {
 		"iconv-lite": "0.x"
