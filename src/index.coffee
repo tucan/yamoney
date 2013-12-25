@@ -1,11 +1,5 @@
-# Yandex.Money classes
-#
-# June, 2013 year
-#
-# Author - Vladimir Andreev
-#
-# E-Mail: volodya@netfolder.ru
+# Copyright QuickSoft LLC
 
 # Exported objects
 
-exports.Service = require('./service')
+exports.Client = require('./client')

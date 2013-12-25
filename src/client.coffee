@@ -1,28 +1,22 @@
-# Yandex.Money service
-#
-# June, 2013 year
-#
-# Author - Vladimir Andreev
-#
-# E-Mail: volodya@netfolder.ru
+# Copyright Vladimir Andreev
 
 # Required modules
 
-https = require('https')
-qs = require('querystring')
-iconv = require('iconv-lite')
+HTTPS = require('https')
+QS = require('querystring')
+Iconv = require('iconv-lite')
 
-# Constants
+# Yandex.Money client
 
-DEFAULT_HOST = 'money.yandex.ru'	# Default host for connections
-DEFAULT_PORT = 443					# Default port for connections
-DEFAULT_CHARSET = 'utf-8'			# Default charset for requests
+class Client
+	# Constants
 
-# Yandex.Money service
+	@DEFAULT_HOST: 'money.yandex.ru'	# Default host for connections
+	@DEFAULT_PORT: 443					# Default port for connections
+	@DEFAULT_CHARSET: 'utf-8'			# Default charset for requests
 
-class Service
 	# Object constructor
-	
+
 	constructor: (@token, @host = DEFAULT_HOST, @port = DEFAULT_PORT, @charset = DEFAULT_CHARSET) ->
 
 	# Returns URL path for given method
@@ -44,9 +38,9 @@ class Service
 
 	_data: (body) -> JSON.parse(iconv.decode(body, 'utf-8'))
 
-	# Invokes pointed method on the server
-	
-	invoke: (options) ->
+	# Sends request to the server
+
+	sendCommand: (method, input, callback) ->
 		# Prepare request body and headers
 
 		body = @_body(options.data)
@@ -59,29 +53,9 @@ class Service
 
 		# Assign event handlers for request
 
-		request.on('response', (response) =>
-			# Array for response chunks
-
-			chunks = []
-
-			# Assign event handlers for response
-
-			response.on('readable', () ->
-				# Push arrived data to the array
-
-				chunks.push(response.read())
-
-				undefined
-			)
-
-			response.on('end', () =>
-				# Combine body from chunks and parse it
-
-				data = Buffer.concat(chunks)
-
-				# Error handling
-
-				options.callback?(null, @_data(data))
+		request.on('response', (response) ->
+			response.readAll((error, payload) ->
+				options.callback?(error)
 
 				undefined
 			)
@@ -90,8 +64,6 @@ class Service
 		)
 
 		request.on('error', (error) ->
-			# Error handling
-
 			options.callback?(error)
 
 			undefined
@@ -103,6 +75,26 @@ class Service
 
 		@
 
+	#
+
+	accountInfo: (payload, callback) ->
+
+	#
+
+	operationHistory: (payload, callback) ->
+
+	#
+
+	operationDetails: (payload, callback) ->
+
+	#
+
+	requestPayment: (payload, callback) ->
+
+	#
+
+	processPayment: (payload, callback) ->
+
 # Exported objects
 
-module.exports = Service
+module.exports = Client
