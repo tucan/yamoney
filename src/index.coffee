@@ -1,4 +1,4 @@
-# Copyright QuickSoft LLC
+# Copyright Vladimir Andreev
 
 # Exported objects
 
