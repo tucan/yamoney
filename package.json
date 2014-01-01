@@ -5,6 +5,10 @@
 	"keywords": ["yandex", "money", "payment"],
 	"main": "./lib/index",
 	"licence": "MIT",
+	"author": {
+		"name": "Vladimir Andreev",
+		"email": "volodya@netfolder.ru"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/tucan/yamoney.git"
@@ -17,9 +21,5 @@
 	},
 	"scripts": {
 		"prepublish": "./node_modules/.bin/coffee -c -b -o lib src"
-	},
-	"author": {
-		"name": "Vladimir Andreev",
-		"email": "volodya@netfolder.ru"
 	}
 }
