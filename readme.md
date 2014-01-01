@@ -1,6 +1,11 @@
-# YaMoney
+# Yandex.Money
 
-_yamoney_ provides you with easy and nice interface in order to access Yandex.Money payment system.
+Easy and lightweight client for Yandex.Money payment system.
+
+Among other things `yamoney`
+- Ready for production use (including financial systems)
+- Have only necessary dependencies
+- Can be used alone or with any other libraries
 
 ## Installation
 
@@ -8,58 +13,71 @@ _yamoney_ provides you with easy and nice interface in order to access Yandex.Mo
 $ npm install yamoney
 ```
 
-## Features
-_yamoney_ doesn't restrict your abilities to communicate with server.
+## Usage
 
-# API
+```coffeescript
+	YaMoney = require('yamoney')
 
-## Class Client
+	client = YaMoney.Client(host: 'money.yandex.ru', port: 443, charset: 'utf-8')
 
-This class represents client for Yandex.Money payment system.
+	client.accountInfo((error, info) ->
+		unless error?
+			console.log('Your account details:')
+			console.log(info)
+		else
+			console.log('Something went wrong:')
+			console.log(error)
 
-### .accountInfo(callback)
-- `callback` Function
+		undefined
+	)
+```
 
-### .operationHistory(selector, callback)
-- `selector` Object
-- `callback` Function
+## API
 
-Returns operations which satisfies provided conditions.
-Currently `payload` can contain following fields:
-- `type` String
-- `label` String
-- `from` Date
-- `till` Date
-- `start_record` String
-- `records` Number
-- `details` Boolean
+### Class Client
 
-Additionally you can specify any other fields (not more than one depth level).
+This class represents client for Yandex.Money.
 
-### .operationDetails(id, callback)
+#### .setToken(value)
+- `value` String
+
+Sets token for subsequent requests. Token can also be passed to `constructor` in `options` hash.
+
+#### .removeToken()
+
+Removes previously stored token.
+
+#### .sendRequest(method, input, callback)
+- `method` String
+- `input` Object | null
+- `callback` Function | null
+
+Generic method for accessing any API methods on remote side.
+
+For now following values are defined for `method`:
+- `account-info`
+- `operation-details`
+- `operation-history`
+- `request-payment`
+- `process-payment`
+
+However you can pass any string instead of defined above. It can be usefull for future versions of API.
+
+#### .accountInfo(callback)
+- `callback` Function | null
+
+#### .operationDetails(id, callback)
 - `id` String
-- `callback` Function
+- `callback` Function | null
 
-Returns details of operation with pointed `id`. Upon request completion `callback` will be invoked.
+#### .operationHistory(selector, callback)
+- `selector` Object
+- `callback` Function | null
 
-### .requestPayment(payload, callback)
-- `payload` Object
-- `callback` Function
+#### .requestPayment(fields, callback)
+- `fields` Object
+- `callback` Function | null
 
-Currently `payload` can contain following fields:
-- `pattern_id` String
-- `*` String | Number | Boolean
-
-### .processPayment(payload, callback)
-- `payload` Object
-- `callback` Function
-
-Currently `payload` can contain following fields:
-- `request_id` String
-- `money_source` String
-- `csc` String
-
-For test purposes you can also pass:
-- `test_payment` Boolean
-- `test_card` String
-- `test_result` String
+#### .processPayment(fields, callback)
+- `fields` Object
+- `callback` Function | null
