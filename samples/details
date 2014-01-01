@@ -1,0 +1,33 @@
+#! /usr/bin/env coffee
+
+# Required modules
+
+FS = require('fs')
+YaMoney = require('..')
+
+# Check provided CLI args
+
+unless process.argv.length is 4
+	programName = process.argv[1].match(/[^/]+$/)[0]
+	console.log('Usage: ' + programName + ' TOKEN_PATH OPERATION_ID')
+	process.exit()
+
+# Process CLI args
+
+tokenPath = process.argv[2]
+token = JSON.parse(FS.readFileSync(tokenPath, encoding: 'utf-8')).access_token
+
+operationId = process.argv[3]
+
+# Create client and set access token
+
+client = new YaMoney.Client(host: 'money.yandex.ru', port: 443, charset: 'utf-8')
+client.setToken(token)
+
+# And invoke necessary methods
+
+client.operationDetails(operationId, (error, details) ->
+	unless error? then console.log(details) else console.log(error)
+
+	undefined
+)
