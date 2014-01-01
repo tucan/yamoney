@@ -2,6 +2,8 @@
 
 Easy and lightweight client for Yandex.Money payment system.
 
+## Features
+
 Among other things `yamoney`
 - Ready for production use (including financial systems)
 - Have only necessary dependencies
@@ -18,7 +20,7 @@ $ npm install yamoney
 ```coffeescript
 	YaMoney = require('yamoney')
 
-	client = YaMoney.Client(host: 'money.yandex.ru', port: 443, charset: 'utf-8')
+	client = new YaMoney.Client(host: 'money.yandex.ru', port: 443, charset: 'utf-8')
 
 	client.accountInfo((error, info) ->
 		unless error?
@@ -37,6 +39,11 @@ $ npm install yamoney
 ### Class Client
 
 This class represents client for Yandex.Money.
+
+#### ::constructor(options)
+- `options` Object
+
+Constructor for the class.
 
 #### .setToken(value)
 - `value` String
