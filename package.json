@@ -1,6 +1,6 @@
 {
 	"name": "yamoney",
-	"version": "0.1.0-beta",
+	"version": "0.1.0",
 	"description": "Client for Yandex.Money",
 	"keywords": ["yandex", "money", "payment"],
 	"main": "./lib/index",
@@ -14,6 +14,7 @@
 		"url": "https://github.com/tucan/yamoney.git"
 	},
 	"dependencies": {
+		"qs": "0.x",
 		"iconv-lite": "0.x"
 	},
 	"devDependencies": {
