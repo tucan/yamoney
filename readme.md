@@ -7,6 +7,7 @@ Easy and lightweight client for Yandex.Money payment system.
 The library has following important features:
 
 - Ready for production use (including financial systems)
+- Good tolerance to possible API changes
 - Have only necessary dependencies
 - Can be used alone or with any other libraries
 
