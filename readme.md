@@ -5,6 +5,7 @@ Easy and lightweight client for Yandex.Money payment system.
 ## Features
 
 Among other things `yamoney`
+
 - Ready for production use (including financial systems)
 - Have only necessary dependencies
 - Can be used alone or with any other libraries
@@ -62,6 +63,7 @@ Removes previously stored token.
 Generic method for accessing any API methods on remote side.
 
 For now following values are defined for `method`:
+
 - `account-info`
 - `operation-details`
 - `operation-history`
