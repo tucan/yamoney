@@ -4,7 +4,7 @@ Easy and lightweight client for Yandex.Money payment system.
 
 ## Features
 
-Among other things `yamoney`
+The library has following important features:
 
 - Ready for production use (including financial systems)
 - Have only necessary dependencies
@@ -21,7 +21,7 @@ $ npm install yamoney
 ```coffeescript
 	YaMoney = require('yamoney')
 
-	client = new YaMoney.Client(host: 'money.yandex.ru', port: 443, charset: 'utf-8')
+	client = new YaMoney.Client(token: obtainSomeToken())
 
 	client.accountInfo((error, info) ->
 		unless error?
@@ -46,8 +46,8 @@ This class represents client for Yandex.Money.
 
 Constructor for the class.
 
-#### .setToken(value)
-- `value` String
+#### .setToken(token)
+- `token` String
 
 Sets token for subsequent requests. Token can also be passed to `constructor` in `options` hash.
 
@@ -55,14 +55,14 @@ Sets token for subsequent requests. Token can also be passed to `constructor` in
 
 Removes previously stored token.
 
-#### .sendRequest(method, input, callback)
-- `method` String
-- `input` Object | null
+#### .sendRequest(endpoint, data, callback)
+- `endpoint` String
+- `data` Object | null
 - `callback` Function | null
 
 Generic method for accessing any API methods on remote side.
 
-For now following values are defined for `method`:
+For now following values are defined for `endpoint`:
 
 - `account-info`
 - `operation-details`
