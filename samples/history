@@ -26,15 +26,14 @@ for pair in process.argv.slice(3)
 	[key, value] = pair.split('=')
 	selector[key] = value
 
-# Create client and set access token
+# Create client using specified token
 
-client = new YaMoney.Client(host: 'money.yandex.ru', port: 443, charset: 'utf-8')
-client.setToken(token)
+client = new YaMoney.Client(token: token)
 
 # And invoke necessary methods
 
-client.operationHistory(selector, (error, details) ->
-	unless error? then console.log(details) else console.log(error)
+client.operationHistory(selector, (error, history) ->
+	unless error? then console.log(history) else console.log(error)
 
 	undefined
 )

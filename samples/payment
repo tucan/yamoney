@@ -26,15 +26,20 @@ for pair in process.argv.slice(3)
 	[key, value] = pair.split('=')
 	params[key] = value
 
-# Create client and set access token
+# Create client using specified token
 
-client = new YaMoney.Client(host: 'money.yandex.ru', port: 443, charset: 'utf-8')
-client.setToken(token)
+client = new YaMoney.Client(token: token)
 
 # And invoke necessary methods
 
-client.requestPayment(params, (error, details) ->
-	unless error? then console.log(details) else console.log(error)
+client.requestPayment(params, (error, data) ->
+	unless error? then console.log(data) else console.log(error)
+
+	client.processPayment(null, (error, data) ->
+		unless error? then console.log(data) else console.log(error)
+
+		undefined
+	)
 
 	undefined
 )
