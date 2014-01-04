@@ -3,68 +3,110 @@
 # Required modules
 
 HTTPS = require('https')
-QS = require('querystring')
+QS = require('qs')
 Iconv = require('iconv-lite')
 
 # Yandex.Money client
 
 class Client
-	# Constants
+	# Default connection parameters
 
-	@DEFAULT_HOST: 'money.yandex.ru'	# Default host for connections
-	@DEFAULT_PORT: 443					# Default port for connections
-	@DEFAULT_CHARSET: 'utf-8'			# Default charset for requests
+	@SERVER_NAME: 'money.yandex.ru'
+	@SERVER_PORT: 443
+
+	#
+
+	@REQUEST_CHARSET: 'utf-8'
 
 	# Object constructor
 
-	constructor: (@token, @host = DEFAULT_HOST, @port = DEFAULT_PORT, @charset = DEFAULT_CHARSET) ->
+	constructor: (options) ->
+		@_host = options?.host
+		@_host = @constructor.SERVER_NAME unless @_host?
 
-	# Returns URL path for given method
+		@_port = options?.port
+		@_port = @constructor.SERVER_PORT unless @_port?
 
-	_path: (options) -> '/api/' + options.method
+		@_charset = options?.charset
+		@_charset = @constructor.REQUEST_CHARSET unless @_charset?
 
-	# Serializes provided data
+		@_token = options?.token
 
-	_body: (data) -> iconv.encode(qs.stringify(data), @charset)
+	# Generate request options based on provided parameters
+ 
+	_requestOptions: (endpoint, body) ->
+		path = '/api/' + endpoint
 
-	# Returns headers for given request body
+		headers =
+			'Authorization': 'Bearer ' + @_token
+			'Content-Type': 'application/x-www-form-urlencoded; charset=' + @_charset
+			'Content-Length': body.length
 
-	_headers: (body) ->
-		'Authorization': 'Bearer ' + @token
-		'Content-Type': 'application/x-www-form-urlencoded; charset=' + @charset
-		'Content-Length': body.length
+		options =
+			host: @_host, port: @_port
+			method: 'POST', path: path
+			headers: headers
 
-	# Parses response body
+		options
 
-	_data: (body) -> JSON.parse(iconv.decode(body, 'utf-8'))
+	# Generate onResponse handler for provided callback
 
-	# Sends request to the server
+	_responseHandler: (callback) -> (response) ->
+		# Try to determine media type and charset
 
-	sendCommand: (method, input, callback) ->
-		# Prepare request body and headers
+		contentType = response.headers['content-type']
 
-		body = @_body(options.data)
-		headers = @_headers(body)
-		path = @_path(options)
+		[mediaType, firstAttr] = contentType.split(/\s*;\s*/, 2)
+		charset = firstAttr.split('=')[1]
 
-		# Create request
+		# Array for arriving chunks
 
-		request = https.request(host: @host, port: @port, method: 'POST', path: path, headers: headers)
+		chunks = []
 
-		# Assign event handlers for request
+		# Assign necessary event handlers
 
-		request.on('response', (response) ->
-			response.readAll((error, payload) ->
-				options.callback?(error)
-
-				undefined
-			)
+		response.on('readable', () ->
+			chunks.push(response.read())
 
 			undefined
 		)
 
+		response.on('end', () ->
+			# All is OK
+
+			if response.statusCode is 200
+				fields = JSON.parse(Iconv.decode(Buffer.concat(chunks), charset))
+
+				# According to Yandex.Money protocol
+
+				unless fields.error? then callback(null, fields)
+				else callback(new Error(fields.error))
+
+			else
+				callback(new Error('Something went wrong'))
+
+			undefined
+		)
+
+		undefined
+
+	# Sends request to the server
+
+	sendRequest: (endpoint, data, callback) ->
+		# Make serialization and derived text encoding
+
+		body = Iconv.encode(QS.stringify(data), @_charset)
+
+		# Create request using generated options
+
+		request = HTTPS.request(@_requestOptions(endpoint, body))
+
+		# Assign necessary event handlers
+
+		request.on('response', @_responseHandler(callback))
+
 		request.on('error', (error) ->
-			options.callback?(error)
+			callback?(error)
 
 			undefined
 		)
@@ -75,25 +117,44 @@ class Client
 
 		@
 
-	#
+	# Sets pointed token for subsequent requests
 
-	accountInfo: (payload, callback) ->
+	setToken: (token) ->
+		@_token = token
 
-	#
+		@
 
-	operationHistory: (payload, callback) ->
+	# Removes previously stored token
 
-	#
+	removeToken: () ->
+		@_token = null
 
-	operationDetails: (payload, callback) ->
+		@
 
-	#
+	# Returns account info
 
-	requestPayment: (payload, callback) ->
+	accountInfo: (callback) ->
+		@sendRequest('account-info', null, callback)
 
-	#
+	# Returns details about specified operation
 
-	processPayment: (payload, callback) ->
+	operationDetails: (id, callback) ->
+		@sendRequest('operation-details', operation_id: id, callback)
+
+	# Returns info about selected operations
+
+	operationHistory: (selector, callback) ->
+		@sendRequest('operation-history', selector, callback)
+
+	# Initializes new payment
+
+	requestPayment: (data, callback) ->
+		@sendRequest('request-payment', data, callback)
+
+	# Processes previously initialized payment
+
+	processPayment: (data, callback) ->
+		@sendRequest('process-payment', data, callback)
 
 # Exported objects
 
