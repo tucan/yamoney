@@ -21,16 +21,13 @@ class Client
 	# Object constructor
 
 	constructor: (options) ->
-		@_host = options?.host
-		@_host = @constructor.SERVER_NAME unless @_host?
+		options ?= Object.create(null)
 
-		@_port = options?.port
-		@_port = @constructor.SERVER_PORT unless @_port?
+		@_host = options.host ? @constructor.SERVER_NAME
+		@_port = options.port ? @constructor.SERVER_PORT
+		@_charset = options.charset ? @constructor.REQUEST_CHARSET
 
-		@_charset = options?.charset
-		@_charset = @constructor.REQUEST_CHARSET unless @_charset?
-
-		@_token = options?.token
+		@_token = options.token ? null
 
 	# Generate request options based on provided parameters
  
@@ -56,7 +53,7 @@ class Client
 
 		contentType = response.headers['content-type']
 
-		[mediaType, firstAttr] = contentType.split(/\s*;\s*/, 2)
+		[mimeType, firstAttr] = contentType.split(/\s*;\s*/, 2)
 		charset = firstAttr.split('=')[1]
 
 		# Array for arriving chunks
@@ -72,18 +69,22 @@ class Client
 		)
 
 		response.on('end', () ->
-			# All is OK
+			body = Buffer.concat(chunks)
 
 			if response.statusCode is 200
-				fields = JSON.parse(Iconv.decode(Buffer.concat(chunks), charset))
+				if mimeType is 'application/json'
+					data = JSON.parse(Iconv.decode(body, charset))
 
-				# According to Yandex.Money protocol
+					unless data.error?
+						callback(null, data)
+					else
+						callback(new Error(data.error))
 
-				unless fields.error? then callback(null, fields)
-				else callback(new Error(fields.error))
+				else
+					callback(new Error('Unexpected MIME-type'))
 
 			else
-				callback(new Error('Something went wrong'))
+				callback(new Error('Something went wrong. See headers'))
 
 			undefined
 		)
