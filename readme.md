@@ -8,7 +8,7 @@ The library has following important features:
 
 - Ready for production use (including financial systems)
 - Good tolerance to possible API changes
-- Have only necessary dependencies
+- Only necessary package dependencies
 - Can be used alone or with any other libraries
 
 ## Installation
@@ -45,6 +45,15 @@ This class represents client for Yandex.Money.
 #### ::constructor(options)
 - `options` Object
 
+For now `options` can contain following keys:
+
+- `host` Host name or IP address for connecting to
+- `port` Port for connecting to
+- `charset` Charset to be used for requests
+- `token` Access token provided by Yandex.Money
+
+If one of `host`, `port` or `charset` is missed then default value will be used. If `token` is missed then `null` will be stored in the internal field. You will be able to set real token later by calling `setToken`.
+
 Constructor for the class.
 
 #### .setToken(token)
@@ -63,7 +72,7 @@ Removes previously stored token.
 
 Generic method for accessing any API methods on remote side.
 
-For now following values are defined for `endpoint`:
+For now following values are defined for `endpoint` by Yandex.Money API:
 
 - `account-info`
 - `operation-details`
@@ -84,10 +93,23 @@ However you can pass any string instead of defined above. It can be usefull for 
 - `selector` Object
 - `callback` Function | null
 
-#### .requestPayment(fields, callback)
-- `fields` Object
+#### .requestPayment(data, callback)
+- `data` Object
 - `callback` Function | null
 
-#### .processPayment(fields, callback)
-- `fields` Object
+#### .processPayment(data, callback)
+- `data` Object
 - `callback` Function | null
+
+## Bugs
+
+If you have discovered any bug please feel free to contact with me. I will do all my best to fix it in shortest time.
+
+Currently code has following problematic pieces:
+
+- No cheking for undefined or null callbacks
+- Not completed error discovering logic for server responses
+
+The first means you should always provide callback. And the second means `yamoney` expects full compliance of server behaviour with specification.
+
+All above problems will be solved soon.
