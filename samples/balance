@@ -3,6 +3,7 @@
 # Required modules
 
 FS = require('fs')
+Util = require('util')
 YaMoney = require('..')
 
 # Check provided CLI args
@@ -27,7 +28,10 @@ client = new YaMoney.Client(token: token)
 # And invoke necessary methods
 
 client.accountInfo((error, info) ->
-	unless error? then console.log(info) else console.log(error)
+	unless error?
+		console.log(Util.inspect(info, colors: true))
+	else
+		console.log(error)
 
 	undefined
 )
