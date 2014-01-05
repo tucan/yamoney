@@ -3,8 +3,8 @@
 # Required modules
 
 HTTPS = require('https')
-QS = require('qs')
 Iconv = require('iconv-lite')
+QueryString = require('qs')
 
 # Yandex.Money client
 
@@ -96,7 +96,7 @@ class Client
 	sendRequest: (endpoint, data, callback) ->
 		# Make serialization and derived text encoding
 
-		body = Iconv.encode(QS.stringify(data), @_charset)
+		body = Iconv.encode(QueryString.stringify(data), @_charset)
 
 		# Create request using generated options
 
@@ -131,6 +131,15 @@ class Client
 		@_token = null
 
 		@
+
+	# Revokes current token
+
+	revokeToken: (callback) ->
+		@sendRequest('revoke', null, (error) =>
+			@removeToken() unless error?
+
+			callback?(error)
+		)
 
 	# Returns account info
 
