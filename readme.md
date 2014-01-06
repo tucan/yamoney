@@ -42,6 +42,24 @@ $ npm install yamoney
 
 This class represents client for Yandex.Money.
 
+#### ::SERVER_NAME
+
+- `String` Default `money.yandex.ru`
+
+Default server name or IP address for connections to.
+
+#### ::SERVER_PORT
+
+- `Number` Default `443`
+
+Default server port for connections to.
+
+#### ::REQUEST_CHARSET
+
+- `String` Default `utf-8`
+
+Description will be added.
+
 #### ::constructor(options)
 - `options` Object
 
