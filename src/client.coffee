@@ -4,7 +4,7 @@
 
 HTTPS = require('https')
 Iconv = require('iconv-lite')
-QueryString = require('qs')
+QS = require('qs')
 
 # Yandex.Money client
 
@@ -46,19 +46,31 @@ class Client
 
 		options
 
-	# Generate onResponse handler for provided callback
+	#
 
-	_responseHandler: (callback) -> (response) ->
-		# Try to determine media type and charset
-
+	_parseContentType = (contentType) ->
 		contentType = response.headers['content-type']
 
 		[mimeType, firstAttr] = contentType.split(/\s*;\s*/, 2)
 		charset = firstAttr.split('=')[1]
 
+	#
+
+	_parseAuthenticate = (auth) ->
+
+	# Generate onResponse handler for provided callback
+
+	_responseHandler: (callback) -> (response) ->
 		# Array for arriving chunks
 
 		chunks = []
+
+		# Stub
+
+		mimeType = 'application/json'
+		charset = 'utf-8'
+
+		firstDigit = Math.floor(response.statusCode / 100)
 
 		# Assign necessary event handlers
 
@@ -69,22 +81,34 @@ class Client
 		)
 
 		response.on('end', () ->
+			return if typeof callback isnt 'function'
+
 			body = Buffer.concat(chunks)
 
-			if response.statusCode is 200
-				if mimeType is 'application/json'
-					data = JSON.parse(Iconv.decode(body, charset))
+			error = null
 
-					unless data.error?
-						callback(null, data)
-					else
-						callback(new Error(data.error))
+			# Client error occured
 
-				else
-					callback(new Error('Unexpected MIME-type'))
+			if firstDigit is 4
+				error = new Error(response.headers['www-authenticate'])
 
+			# Other status codes (1, 3, 5, ...)
+
+			else if firstDigit isnt 2
+				error = new Error('Unexpected status code')
+
+			# Unexpected content type. It happens sometimes with YaServer
+
+			else if mimeType isnt 'application/json'
+				error = new Error(mimeType)
+
+			#
+
+			if error?
+				callback(error)
 			else
-				callback(new Error('Something went wrong. See headers'))
+				output = JSON.parse(Iconv.decode(body, charset))
+				callback(null, output)
 
 			undefined
 		)
@@ -93,14 +117,14 @@ class Client
 
 	# Sends request to the server
 
-	sendRequest: (endpoint, data, callback) ->
+	invokeMethod: (name, input, callback) ->
 		# Make serialization and derived text encoding
 
-		body = Iconv.encode(QueryString.stringify(data), @_charset)
+		blob = Iconv.encode(QS.stringify(input), @_charset)
 
 		# Create request using generated options
 
-		request = HTTPS.request(@_requestOptions(endpoint, body))
+		request = HTTPS.request(@_requestOptions(name, blob))
 
 		# Assign necessary event handlers
 
@@ -114,7 +138,7 @@ class Client
 
 		# Write body and finish request
 
-		request.end(body)
+		request.end(blob)
 
 		@
 
@@ -135,8 +159,8 @@ class Client
 	# Revokes current token
 
 	revokeToken: (callback) ->
-		@sendRequest('revoke', null, (error) =>
-			@removeToken() unless error?
+		@invokeMethod('revoke', null, (error) =>
+			@_token = null unless error?
 
 			callback?(error)
 		)
@@ -144,27 +168,27 @@ class Client
 	# Returns account info
 
 	accountInfo: (callback) ->
-		@sendRequest('account-info', null, callback)
+		@invokeMethod('account-info', null, callback)
 
 	# Returns details about specified operation
 
 	operationDetails: (id, callback) ->
-		@sendRequest('operation-details', operation_id: id, callback)
+		@invokeMethod('operation-details', operation_id: id, callback)
 
 	# Returns info about selected operations
 
 	operationHistory: (selector, callback) ->
-		@sendRequest('operation-history', selector, callback)
+		@invokeMethod('operation-history', selector, callback)
 
 	# Initializes new payment
 
-	requestPayment: (data, callback) ->
-		@sendRequest('request-payment', data, callback)
+	requestPayment: (input, callback) ->
+		@invokeMethod('request-payment', input, callback)
 
 	# Processes previously initialized payment
 
-	processPayment: (data, callback) ->
-		@sendRequest('process-payment', data, callback)
+	processPayment: (input, callback) ->
+		@invokeMethod('process-payment', input, callback)
 
 # Exported objects
 
