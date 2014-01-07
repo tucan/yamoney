@@ -11,6 +11,9 @@ The library has following important features:
 - Only necessary package dependencies
 - Can be used alone or with any other libraries
 
+Additionally `yamoney` has a set of samples which covers almost all API calls.
+You can play with API from console as much as you want before real use!
+
 ## Installation
 
 ```
