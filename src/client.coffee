@@ -46,31 +46,12 @@ class Client
 
 		options
 
-	#
-
-	_parseContentType = (contentType) ->
-		contentType = response.headers['content-type']
-
-		[mimeType, firstAttr] = contentType.split(/\s*;\s*/, 2)
-		charset = firstAttr.split('=')[1]
-
-	#
-
-	_parseAuthenticate = (auth) ->
-
 	# Generate onResponse handler for provided callback
 
 	_responseHandler: (callback) -> (response) ->
 		# Array for arriving chunks
 
 		chunks = []
-
-		# Stub
-
-		mimeType = 'application/json'
-		charset = 'utf-8'
-
-		firstDigit = Math.floor(response.statusCode / 100)
 
 		# Assign necessary event handlers
 
@@ -81,41 +62,27 @@ class Client
 		)
 
 		response.on('end', () ->
-			return if typeof callback isnt 'function'
+			return unless typeof callback is 'function'
 
 			body = Buffer.concat(chunks)
 
-			error = null
-
 			# Client error occured
 
-			if firstDigit is 4
-				error = new Error(response.headers['www-authenticate'])
-
-			# Other status codes (1, 3, 5, ...)
-
-			else if firstDigit isnt 2
-				error = new Error('Unexpected status code')
-
-			# Unexpected content type. It happens sometimes with YaServer
-
-			else if mimeType isnt 'application/json'
-				error = new Error(mimeType)
-
-			#
-
-			if error?
-				callback(error)
-			else
-				output = JSON.parse(Iconv.decode(body, charset))
-				callback(null, output)
+			switch Math.floor(response.statusCode / 100)
+				when 2
+					output = JSON.parse(Iconv.decode(body, 'utf-8'))
+					callback(null, output)
+				when 4
+					callback(new Error(response.headers['www-authenticate']))
+				else
+					callback(new Error('Unexpected status code'))
 
 			undefined
 		)
 
 		undefined
 
-	# Sends request to the server
+	# Invokes pointed method on the remote side
 
 	invokeMethod: (name, input, callback) ->
 		# Make serialization and derived text encoding
