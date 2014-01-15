@@ -23,20 +23,20 @@ $ npm install yamoney
 ## Usage
 
 ```coffeescript
-	YaMoney = require('yamoney')
+YaMoney = require('yamoney')
 
-	client = new YaMoney.Client(token: obtainSomeToken())
+client = new YaMoney.Client(token: obtainSomeToken())
 
-	client.accountInfo((error, info) ->
-		unless error?
-			console.log('Your account details:')
-			console.log(info)
-		else
-			console.log('Something went wrong:')
-			console.log(error)
+client.accountInfo((error, info) ->
+	unless error?
+		console.log('Your account details:')
+		console.log(info)
+	else
+		console.log('Something went wrong:')
+		console.log(error)
 
-		undefined
-	)
+	undefined
+)
 ```
 
 ## API
@@ -61,7 +61,7 @@ Default server port for connections to.
 
 - `String` Default `utf-8`
 
-Description will be added.
+Charset which will be used by client while sending requests.
 
 #### ::constructor(options)
 - `options` Object
