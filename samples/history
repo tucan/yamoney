@@ -16,10 +16,12 @@ if process.argv.length < 3
 
 	process.exit()
 
-# Process CLI args
+# Read token from file pointed in CLI args
 
 tokenPath = process.argv[2]
 token = JSON.parse(FS.readFileSync(tokenPath, encoding: 'utf-8')).access_token
+
+# Generate operation selector from CLI args
 
 selector = Object.create(null)
 
@@ -31,11 +33,11 @@ for pair in process.argv.slice(3)
 
 client = new YaMoney.Client(token: token)
 
-# And invoke necessary methods
+# And invoke remote method
 
 client.operationHistory(selector, (error, history) ->
 	unless error?
-		console.log(Util.inspect(history, colors: true))
+		console.log(Util.inspect(history, colors: true, depth: null))
 	else
 		console.log(error)
 

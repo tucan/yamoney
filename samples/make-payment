@@ -16,10 +16,12 @@ if process.argv.length < 3
 
 	process.exit()
 
-# Process CLI args
+# Read token from file pointed in CLI args
 
 tokenPath = process.argv[2]
 token = JSON.parse(FS.readFileSync(tokenPath, encoding: 'utf-8')).access_token
+
+# Generate request input data from CLI args
 
 params = Object.create(null)
 
@@ -31,7 +33,7 @@ for pair in process.argv.slice(3)
 
 client = new YaMoney.Client(token: token)
 
-# And invoke necessary methods
+# And invoke remote methods
 
 client.requestPayment(params, (error, data) ->
 	unless error?
@@ -43,7 +45,7 @@ client.requestPayment(params, (error, data) ->
 
 	client.processPayment(null, (error, data) ->
 		unless error?
-			console.log(Util.inspect(data, colors: true))
+			console.log(Util.inspect(data, colors: true, depth: null))
 		else
 			console.log(error)
 

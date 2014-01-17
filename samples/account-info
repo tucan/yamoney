@@ -25,11 +25,11 @@ token = JSON.parse(FS.readFileSync(tokenPath, encoding: 'utf-8')).access_token
 
 client = new YaMoney.Client(token: token)
 
-# And invoke necessary methods
+# And invoke remote method
 
 client.accountInfo((error, info) ->
 	unless error?
-		console.log(Util.inspect(info, colors: true))
+		console.log(Util.inspect(info, colors: true, depth: null))
 	else
 		console.log(error)
 
