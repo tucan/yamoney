@@ -9,14 +9,15 @@ QS = require('qs')
 # Yandex.Money client
 
 class Client
-	# Default connection parameters
+	# Connection default parameters
 
 	@SERVER_NAME: 'money.yandex.ru'
 	@SERVER_PORT: 443
 
-	#
+	# Request and response default parameters
 
 	@REQUEST_CHARSET: 'utf-8'
+	@RESPONSE_MAX_SIZE: 1024 * 1024		# 1M
 
 	# Object constructor
 
@@ -29,6 +30,8 @@ class Client
 
 		@_token = options.token ? null
 
+		@_headers = Object.create(null)
+
 	# Generate request options based on provided parameters
  
 	_requestOptions: (endpoint, body) ->
@@ -39,10 +42,17 @@ class Client
 			'Content-Type': 'application/x-www-form-urlencoded; charset=' + @_charset
 			'Content-Length': body.length
 
+		# Merge const headers and request specific headers
+
+		fullHeaders = Object.create(null)
+
+		fullHeaders[key] = value for key, value of @_headers
+		fullHeaders[key] = value for key, value of headers
+
 		options =
 			host: @_host, port: @_port
 			method: 'POST', path: path
-			headers: headers
+			headers: fullHeaders
 
 		options
 
@@ -66,7 +76,7 @@ class Client
 
 			body = Buffer.concat(chunks)
 
-			# Client error occured
+			# Handle status code
 
 			switch Math.floor(response.statusCode / 100)
 				when 2
@@ -81,6 +91,20 @@ class Client
 		)
 
 		undefined
+
+	#
+
+	setHeader: (name, value) ->
+		@_headers[name] = value
+
+		@
+
+	#
+
+	removeHeader: (name) ->
+		delete @_headers[name]
+
+		@
 
 	# Invokes pointed method on the remote side
 

@@ -77,6 +77,17 @@ For now `options` can contain following keys:
 
 If one of `host`, `port` or `charset` is missed then default value will be used. If `token` is missed then `null` will be stored in the internal field. You will be able to set real token later by calling `setToken`.
 
+#### .setHeader(name, value)
+- `name` String
+- `value` String
+
+Sets HTTP header with pointed name and value for subsequent requests.
+
+#### .removeHeader(name)
+- `name` String
+
+Removes header with pointed name.
+
 #### .setToken(token)
 - `token` String
 
