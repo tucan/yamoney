@@ -80,7 +80,7 @@ class Client
 
 			switch Math.floor(response.statusCode / 100)
 				when 2
-					output = JSON.parse(Iconv.decode(body, 'utf-8'))
+					output = JSON.parse(Iconv.decode(body, 'utf-8') or '{}')
 					callback(null, output)
 				when 4
 					callback(new Error(response.headers['www-authenticate']))
