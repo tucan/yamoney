@@ -35,7 +35,7 @@ client.accountInfo((error, info) ->
 		console.log('Something went wrong:')
 		console.log(error)
 
-	undefined
+	return
 )
 ```
 
@@ -104,7 +104,7 @@ Removes previously stored token.
 
 Generic method for accessing any API methods on remote side.
 
-For now following values are defined for `endpoint` by Yandex.Money API:
+For now following values are defined for `name` by Yandex.Money API:
 
 - `revoke`
 - `account-info`
@@ -118,36 +118,40 @@ However you can pass any string instead of defined above. It can be usefull for 
 #### .revokeToken(callback)
 - `callback` Function | null
 
-Description will be added.
+Revokes token which currently in use by client.
 
 #### .accountInfo(callback)
 - `callback` Function | null
 
-Description will be added.
+Returns information about account current token was obtained for.
 
 #### .operationDetails(id, callback)
 - `id` String
 - `callback` Function | null
 
-Description will be added.
+Returns details of operation identified by `id`.
 
 #### .operationHistory(selector, callback)
 - `selector` Object
 - `callback` Function | null
 
-Description will be added.
+Returns operations history optionally filtered by `selector`.
 
 #### .requestPayment(input, callback)
 - `input` Object
 - `callback` Function | null
 
-Description will be added.
+Makes initial request for payment. This method is the first expected for any payment.
 
 #### .processPayment(input, callback)
 - `input` Object
 - `callback` Function | null
 
-Description will be added.
+Finalize payment required by `requestPayment`. This method is the second expected for any payment.
+
+## Additional information
+
+For all methods described above you can find more information at http://api.yandex.ru/money/
 
 ## Bugs
 
