@@ -68,7 +68,7 @@ class Client
 		response.on('readable', () ->
 			chunks.push(response.read())
 
-			undefined
+			return
 		)
 
 		response.on('end', () ->
@@ -87,10 +87,10 @@ class Client
 				else
 					callback(new Error('Unexpected status code'))
 
-			undefined
+			return
 		)
 
-		undefined
+		return
 
 	#
 
@@ -124,7 +124,7 @@ class Client
 		request.on('error', (error) ->
 			callback?(error)
 
-			undefined
+			return
 		)
 
 		# Write body and finish request
