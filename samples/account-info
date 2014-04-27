@@ -33,5 +33,5 @@ client.accountInfo((error, info) ->
 	else
 		console.log(error)
 
-	undefined
+	return
 )

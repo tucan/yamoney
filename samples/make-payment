@@ -49,8 +49,8 @@ client.requestPayment(params, (error, data) ->
 		else
 			console.log(error)
 
-		undefined
+		return
 	)
 
-	undefined
+	return
 )

@@ -41,5 +41,5 @@ client.operationHistory(selector, (error, history) ->
 	else
 		console.log(error)
 
-	undefined
+	return
 )
