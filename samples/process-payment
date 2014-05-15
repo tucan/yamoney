@@ -1,0 +1,41 @@
+#! /usr/bin/env coffee
+
+# Required modules
+
+FS = require('fs')
+Util = require('util')
+YaMoney = require('..')
+
+# Check provided CLI args
+
+unless process.argv.length is 4
+	programName = process.argv[1].match(/[^/]+$/)[0]
+
+	console.log('Processes requested payment')
+	console.log('Usage: ' + programName + ' TOKEN_PATH REQUEST_ID')
+
+	process.exit()
+
+# Read token from file pointed in CLI args
+
+tokenPath = process.argv[2]
+token = JSON.parse(FS.readFileSync(tokenPath, encoding: 'utf-8')).access_token
+
+# Obtain request ID from CLI arg
+
+requestId = process.argv[3]
+
+# Create client using specified token
+
+client = new YaMoney.Client(token: token)
+
+# And invoke remote methods
+
+client.processPayment(request_id: requestId, (error, data) ->
+	unless error?
+		console.log(Util.inspect(data, colors: true, depth: null))
+	else
+		console.log(error)
+
+	return
+)

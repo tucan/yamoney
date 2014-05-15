@@ -11,7 +11,7 @@ YaMoney = require('..')
 if process.argv.length < 3
 	programName = process.argv[1].match(/[^/]+$/)[0]
 
-	console.log('Creates new payment and processes it')
+	console.log('Requests new payment')
 	console.log('Usage: ' + programName + ' TOKEN_PATH [PARAM1=VALUE1]...')
 
 	process.exit()
@@ -40,17 +40,6 @@ client.requestPayment(params, (error, data) ->
 		console.log(Util.inspect(data, colors: true))
 	else
 		console.log(error)
-
-	return if error?
-
-	client.processPayment(null, (error, data) ->
-		unless error?
-			console.log(Util.inspect(data, colors: true, depth: null))
-		else
-			console.log(error)
-
-		return
-	)
 
 	return
 )
