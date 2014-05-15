@@ -33,7 +33,7 @@ for pair in process.argv.slice(3)
 
 client = new YaMoney.Client(token: token)
 
-# And invoke remote methods
+# And invoke remote method
 
 client.requestPayment(params, (error, data) ->
 	unless error?

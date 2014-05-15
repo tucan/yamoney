@@ -29,7 +29,7 @@ requestId = process.argv[3]
 
 client = new YaMoney.Client(token: token)
 
-# And invoke remote methods
+# And invoke remote method
 
 client.processPayment(request_id: requestId, (error, data) ->
 	unless error?
