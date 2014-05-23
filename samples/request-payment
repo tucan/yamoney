@@ -23,11 +23,11 @@ token = JSON.parse(FS.readFileSync(tokenPath, encoding: 'utf-8')).access_token
 
 # Generate request input data from CLI args
 
-params = Object.create(null)
+options = Object.create(null)
 
-for pair in process.argv.slice(3)
+for pair in process.argv[3...]
 	[key, value] = pair.split('=')
-	params[key] = value
+	options[key] = value
 
 # Create client using specified token
 
@@ -35,7 +35,7 @@ client = new YaMoney.Client(token: token)
 
 # And invoke remote method
 
-client.requestPayment(params, (error, data) ->
+client.requestPayment(options, (error, data) ->
 	unless error?
 		console.log(Util.inspect(data, colors: true))
 	else

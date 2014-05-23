@@ -11,86 +11,25 @@ QS = require('qs')
 class Client
 	# Connection default parameters
 
-	@SERVER_NAME: 'money.yandex.ru'
-	@SERVER_PORT: 443
+	SERVER_NAME = 'money.yandex.ru'
+	SERVER_PORT = 443
 
 	# Request and response default parameters
 
-	@REQUEST_CHARSET: 'utf-8'
-	@RESPONSE_MAX_SIZE: 1024 * 1024		# 1M
+	REQUEST_CHARSET = 'utf-8'
 
 	# Object constructor
 
 	constructor: (options) ->
 		options ?= Object.create(null)
 
-		@_host = options.host ? @constructor.SERVER_NAME
-		@_port = options.port ? @constructor.SERVER_PORT
-		@_charset = options.charset ? @constructor.REQUEST_CHARSET
+		@_host = options.host ? SERVER_NAME
+		@_port = options.port ? SERVER_PORT
+		@_charset = options.charset ? REQUEST_CHARSET
 
 		@_token = options.token ? null
 
 		@_headers = Object.create(null)
-
-	# Generate request options based on provided parameters
- 
-	_requestOptions: (endpoint, body) ->
-		path = '/api/' + endpoint
-
-		headers =
-			'Authorization': 'Bearer ' + @_token
-			'Content-Type': 'application/x-www-form-urlencoded; charset=' + @_charset
-			'Content-Length': body.length
-
-		# Merge const headers and request specific headers
-
-		fullHeaders = Object.create(null)
-
-		fullHeaders[key] = value for key, value of @_headers
-		fullHeaders[key] = value for key, value of headers
-
-		options =
-			host: @_host, port: @_port
-			method: 'POST', path: path
-			headers: fullHeaders
-
-		options
-
-	# Generate onResponse handler for provided callback
-
-	_responseHandler: (callback) -> (response) ->
-		# Array for arriving chunks
-
-		chunks = []
-
-		# Assign necessary event handlers
-
-		response.on('readable', () ->
-			chunks.push(response.read())
-
-			return
-		)
-
-		response.on('end', () ->
-			return unless typeof callback is 'function'
-
-			body = Buffer.concat(chunks)
-
-			# Handle status code
-
-			switch Math.floor(response.statusCode / 100)
-				when 2
-					output = JSON.parse(Iconv.decode(body, 'utf-8') or '{}')
-					callback(null, output)
-				when 4
-					callback(new Error(response.headers['www-authenticate']))
-				else
-					callback(new Error('Unexpected status code'))
-
-			return
-		)
-
-		return
 
 	#
 
@@ -106,6 +45,75 @@ class Client
 
 		@
 
+	# Generates request options based on provided parameters
+ 
+	_requestOptions: (name, blob) ->
+		path = '/api/' + name
+
+		headers =
+			'Authorization': 'Bearer ' + @_token
+			'Content-Type': 'application/x-www-form-urlencoded; charset=' + @_charset
+			'Content-Length': blob.length
+
+		# Merge const headers and request specific headers
+
+		fullHeaders = Object.create(null)
+
+		fullHeaders[key] = value for key, value of @_headers
+		fullHeaders[key] = value for key, value of headers
+
+		options =
+			host: @_host, port: @_port
+			method: 'POST', path: path
+			headers: fullHeaders
+
+		options
+
+	# Generates onResponse handler for provided callback
+
+	_responseHandler: (callback) -> (response) =>
+		# Array for arriving chunks
+
+		chunks = []
+
+		# Assign necessary event handlers
+
+		response.on('readable', () ->
+			chunks.push(response.read())
+
+			return
+		)
+
+		response.on('end', () ->
+			return if typeof callback isnt 'function'
+
+			blob = Buffer.concat(chunks)
+
+			# Handle status code
+
+			firstDigit = response.statusCode // 100
+
+			switch firstDigit
+				when 2
+					output = JSON.parse(Iconv.decode(blob, 'utf-8') or '{}')
+					callback(null, output)
+				when 4
+					callback(new Error(response.headers['www-authenticate']))
+				else
+					callback(new Error('Unexpected status code'))
+
+			return
+		)
+
+		return
+
+	# Generates onError handler for provided callback
+
+	_errorHandler: (callback) -> (error) =>
+		callback?(error)
+
+		return
+
 	# Invokes pointed method on the remote side
 
 	invokeMethod: (name, input, callback) ->
@@ -120,12 +128,7 @@ class Client
 		# Assign necessary event handlers
 
 		request.on('response', @_responseHandler(callback))
-
-		request.on('error', (error) ->
-			callback?(error)
-
-			return
-		)
+		request.on('error', @_errorHandler(callback))
 
 		# Write body and finish request
 
@@ -171,15 +174,15 @@ class Client
 	operationHistory: (selector, callback) ->
 		@invokeMethod('operation-history', selector, callback)
 
-	# Initializes new payment
+	# Requests new payment
 
-	requestPayment: (input, callback) ->
-		@invokeMethod('request-payment', input, callback)
+	requestPayment: (options, callback) ->
+		@invokeMethod('request-payment', options, callback)
 
-	# Processes previously initialized payment
+	# Processes previously required payment
 
-	processPayment: (input, callback) ->
-		@invokeMethod('process-payment', input, callback)
+	processPayment: (options, callback) ->
+		@invokeMethod('process-payment', options, callback)
 
 # Exported objects
 

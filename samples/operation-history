@@ -25,7 +25,7 @@ token = JSON.parse(FS.readFileSync(tokenPath, encoding: 'utf-8')).access_token
 
 selector = Object.create(null)
 
-for pair in process.argv.slice(3)
+for pair in process.argv[3...]
 	[key, value] = pair.split('=')
 	selector[key] = value
 
