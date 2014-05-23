@@ -45,24 +45,6 @@ client.accountInfo((error, info) ->
 
 This class represents client for Yandex.Money.
 
-#### ::SERVER_NAME
-
-- `String` Default `money.yandex.ru`
-
-Default server name or IP address for connections to.
-
-#### ::SERVER_PORT
-
-- `Number` Default `443`
-
-Default server port for connections to.
-
-#### ::REQUEST_CHARSET
-
-- `String` Default `utf-8`
-
-Charset which will be used by client while sending requests.
-
 #### ::constructor(options)
 - `options` Object
 
@@ -70,10 +52,10 @@ Constructor for the class.
 
 For now `options` can contain following keys:
 
-- `host` Host name or IP address for connections to
-- `port` Port for connections to
-- `charset` Charset to be used for requests
-- `token` Access token provided by Yandex.Money
+- `host` String: Host name or IP address for connections to. Defaults to `money.yandex.ru`
+- `port` Number: Port for connections to. Defaults to `443`
+- `charset` String: Charset to be used for requests. Defaults to `utf-8`
+- `token` String: Access token provided by Yandex.Money
 
 If one of `host`, `port` or `charset` is missed then default value will be used. If `token` is missed then `null` will be stored in the internal field. You will be able to set real token later by calling `setToken`.
 
@@ -87,15 +69,6 @@ Sets HTTP header with pointed name and value for subsequent requests.
 - `name` String
 
 Removes header with pointed name.
-
-#### .setToken(token)
-- `token` String
-
-Sets token for subsequent requests. Token can also be passed to `constructor` in `options` hash.
-
-#### .removeToken()
-
-Removes previously stored token.
 
 #### .invokeMethod(name, input, callback)
 - `name` String
@@ -114,6 +87,15 @@ For now following values are defined for `name` by Yandex.Money API:
 - `process-payment`
 
 However you can pass any string instead of defined above. It can be usefull for future versions of API.
+
+#### .setToken(token)
+- `token` String
+
+Sets token for subsequent requests. Token can also be passed to `constructor` in `options` hash.
+
+#### .removeToken()
+
+Removes previously stored token.
 
 #### .revokeToken(callback)
 - `callback` Function | null
@@ -137,14 +119,14 @@ Returns details of operation identified by `id`.
 
 Returns operations history optionally filtered by `selector`.
 
-#### .requestPayment(input, callback)
-- `input` Object
+#### .requestPayment(options, callback)
+- `options` Object
 - `callback` Function | null
 
 Makes initial request for payment. This method is the first expected for any payment.
 
-#### .processPayment(input, callback)
-- `input` Object
+#### .processPayment(options, callback)
+- `options` Object
 - `callback` Function | null
 
 Finalize payment required by `requestPayment`. This method is the second expected for any payment.
