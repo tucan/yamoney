@@ -95,8 +95,11 @@ class Client
 
 			switch firstDigit
 				when 2
-					output = JSON.parse(Iconv.decode(blob, 'utf-8') or '{}')
-					callback(null, output)
+					try
+						output = JSON.parse(Iconv.decode(blob, 'utf-8') or '{}')
+						callback(null, output)
+					catch error
+						callback(error)
 				when 4
 					callback(new Error(response.headers['www-authenticate']))
 				else
