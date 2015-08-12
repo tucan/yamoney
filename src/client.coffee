@@ -79,7 +79,9 @@ class Client
 		# Assign necessary event handlers
 
 		response.on('readable', () ->
-			chunks.push(response.read())
+			chunk = response.read()
+
+			chunks.push(chunk) if chunk?
 
 			return
 		)
